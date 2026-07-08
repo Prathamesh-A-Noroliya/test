@@ -1,0 +1,336 @@
+# AgroLens v2 Upgrade Prompt for Replit AI
+
+You are a **Senior Full-Stack Software Engineer, UI/UX Designer, Product Architect, and Precision Agriculture Expert**.
+
+You are working inside my existing **AgroLens** project in this Replit workspace.
+
+## IMPORTANT INSTRUCTIONS
+
+Before making any changes:
+
+1. Analyze the **entire project** and understand the existing architecture.
+2. Understand all folders, components, routing, backend, APIs, authentication, database, state management, and UI.
+3. **Do NOT rebuild the project from scratch.**
+4. Preserve the existing architecture and coding style.
+5. Modify only the files required for the requested features.
+6. Create new files only when absolutely necessary.
+7. Keep all existing functionality working.
+8. Ensure there are no TypeScript, JavaScript, build, or lint errors after the changes.
+
+---
+
+# PROJECT GOAL
+
+Transform AgroLens from a crop disease detection application into a modern **AI-powered Smart Agriculture Platform** with premium SaaS-quality UI, smart irrigation features, weather intelligence, analytics, and customizable subscription plans.
+
+The design should feel comparable to modern agricultural SaaS products, with:
+
+* Clean modern UI
+* Professional dashboard
+* Responsive layouts
+* Smooth animations
+* Consistent spacing
+* Premium cards
+* Beautiful typography
+* Excellent mobile experience
+* Fast performance
+* Reusable components
+
+---
+
+# FEATURE 1 – SMART FIELD DASHBOARD
+
+Expand the dashboard with live farm monitoring.
+
+Add cards for:
+
+### Soil Moisture
+
+* Moisture percentage
+* Low / Optimal / High indicator
+* Progress visualization
+
+### Rainfall
+
+* Rainfall today (mm)
+* Weekly rainfall
+* Monthly rainfall
+* Small rainfall chart
+
+### Irrigation Controller
+
+* Current status
+* Auto mode
+* Manual mode
+* Start irrigation
+* Stop irrigation
+* Schedule irrigation
+
+### Field Sensors
+
+* Sensors online
+* Sensors offline
+* Battery level
+* Signal strength
+* Last sync
+
+### Environmental Data
+
+* Temperature
+* Humidity
+* Wind speed
+* UV Index
+* Pressure
+
+### Water Management
+
+* Tank level
+* Water consumption
+* Pump status
+* Motor health
+
+---
+
+# FEATURE 2 – SMART AI RECOMMENDATIONS
+
+Completely redesign the recommendation section.
+
+Instead of only disease treatments, create an AI Farm Assistant.
+
+Recommendations should include:
+
+* Disease treatment
+* Rain expected in next few hours
+* Avoid irrigation warning
+* Best irrigation time
+* High temperature alert
+* Humidity alert
+* Pest risk prediction
+* Fertilizer recommendation
+* Nutrient deficiency
+* Water saving suggestions
+* Growth insights
+* Harvest suggestions
+* Next crop scan reminder
+
+Each recommendation should have:
+
+* Priority level
+* Confidence score
+* Appropriate icons
+* Color-coded cards
+* Expandable details
+
+---
+
+# FEATURE 3 – SCAN HISTORY REDESIGN
+
+Replace the current scan history with two tabs.
+
+## Crop Scan History
+
+Display:
+
+* Crop image
+* Crop name
+* Disease
+* Confidence
+* Date
+* Time
+* Treatment
+* Weather during scan
+* Search
+* Filters
+* Sorting
+* Delete option
+* Export option
+
+## Field Irrigation History
+
+Display:
+
+* Date
+* Water used
+* Duration
+* Automatic / Manual
+* Moisture before irrigation
+* Moisture after irrigation
+* Rainfall
+* Pump runtime
+* Status
+* Notes
+* Search
+* Filters
+* Sorting
+* Export
+
+---
+
+# FEATURE 4 – CUSTOM PREMIUM PLAN BUILDER
+
+Replace the existing pricing page with a **custom plan builder**.
+
+Users can choose only the features they need.
+
+Available premium modules:
+
+* Automated Irrigation — ₹20/month
+* Unlimited Crop Scans — ₹100/month
+* AI Treatment Plans — ₹200/month
+* Expert Help — ₹500/month (includes 3 expert farm visits)
+
+Display the total monthly cost dynamically as users select features.
+
+If the user selects **all four premium modules**, show a highlighted recommendation:
+
+**Yearly AgroLens Pro Bundle**
+
+* Includes all premium features
+* Annual price: **₹6,200**
+* Show it as the best value plan with attractive styling and a savings badge.
+
+The pricing page should include:
+
+* Monthly pricing summary
+* Annual bundle option
+* Dynamic total calculation
+* Interactive feature cards
+* Modern SaaS pricing layout
+* Premium visual design
+
+---
+
+# FEATURE 5 – FREE PLAN
+
+The Free Plan should include:
+
+* Soil Moisture Dashboard
+* Basic Field Monitoring
+* 5 Crop Scans per Month
+* 2 AI Treatment Recommendations per Month
+* Full Bhoomi Scan History
+* Crop Scan History
+* Basic Weather
+* Rainfall Overview
+* Manual Irrigation Logs
+* Community Support
+
+Premium-only features should remain locked with clear upgrade prompts.
+
+---
+
+# FEATURE 6 – WEATHER INTELLIGENCE
+
+Integrate weather information throughout the application.
+
+Include:
+
+* Current weather
+* Hourly forecast
+* 7-day forecast
+* Rain probability
+* Rainfall prediction
+* Humidity
+* Wind speed
+* UV Index
+* Sunrise
+* Sunset
+* Weather alerts
+
+Weather data should influence AI recommendations where appropriate.
+
+---
+
+# FEATURE 7 – ANALYTICS PAGE
+
+Create a new analytics page with professional charts for:
+
+* Water usage
+* Crop health score
+* Disease detections
+* Irrigation history
+* Rainfall trends
+* Sensor health
+* Temperature history
+* Yield prediction
+
+Use visually appealing charts consistent with the application's design.
+
+---
+
+# FEATURE 8 – LOGIN PAGE IMPROVEMENTS
+
+On the login page:
+
+Remove this paragraph completely:
+
+> Detect crop diseases instantly, get intelligent recommendations, and optimize your harvest with the power of AI — right from your phone.
+
+Also update the statistics section.
+
+Current values:
+
+* 50K+ Farmers
+* 200+ Diseases
+* 15 ...
+
+Replace them with:
+
+* 100+ Farmers
+* 10+ Diseases
+* 150+ Farms Irrigated
+
+Ensure the wording and layout remain visually balanced.
+
+---
+
+# FEATURE 9 – UI POLISH
+
+Improve the overall visual quality of the application.
+
+Enhance:
+
+* Navbar
+* Hero section
+* Dashboard cards
+* Buttons
+* Forms
+* Pricing page
+* History page
+* Weather widgets
+* Empty states
+* Loading skeletons
+* Icons
+* Typography
+* Card spacing
+* Hover effects
+* Smooth transitions
+
+Maintain a consistent design system across the application.
+
+---
+
+# FEATURE 10 – CODE QUALITY
+
+While implementing these features:
+
+* Reuse existing components where appropriate.
+* Refactor duplicated logic if necessary.
+* Keep components modular and maintainable.
+* Preserve existing functionality.
+* Ensure responsiveness across desktop, tablet, and mobile.
+* Verify there are no runtime or compilation errors before finishing.
+
+---
+
+# FINAL REQUIREMENT
+
+Before making changes, provide a concise implementation plan listing the files that will be modified or created.
+
+Then apply the changes directly within the project.
+
+When complete:
+
+* Verify the application builds successfully.
+* Check for TypeScript/JavaScript errors.
+* Confirm that all requested features have been implemented without breaking existing functionality.
