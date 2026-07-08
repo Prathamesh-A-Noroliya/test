@@ -7,12 +7,14 @@ import { z } from "zod";
 import {
   Leaf, Mail, Lock, Eye, EyeOff, ArrowRight, Sprout,
   CheckCircle2, XCircle, Zap, Droplets, Users, Sprout as SproutIcon,
+  Sun, Moon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/lib/auth";
 import { useLanguage } from "@/lib/language-context";
+import { useTheme } from "@/lib/theme-context";
 
 /* ──── Password rules ───────────────────────────────────── */
 const PW_RULES = [
@@ -42,6 +44,7 @@ export default function LoginPage() {
   const [, navigate] = useLocation();
   const { login, loginDemo } = useAuth();
   const { t } = useLanguage();
+  const { theme, toggle } = useTheme();
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [demoLoading, setDemoLoading] = useState(false);
@@ -132,15 +135,28 @@ export default function LoginPage() {
         style={{ background: "linear-gradient(160deg, hsl(142 30% 97.5%) 0%, hsl(200 45% 97%) 100%)" }}
       >
         <div className="w-full max-w-md">
-          {/* Mobile logo */}
-          <div className="flex items-center gap-2 mb-8 lg:hidden">
-            <div className="w-9 h-9 rounded-xl gradient-primary flex items-center justify-center">
-              <Leaf className="h-5 w-5 text-white" />
+          {/* Mobile logo + theme toggle */}
+          <div className="flex items-center justify-between mb-8 lg:hidden">
+            <div className="flex items-center gap-2">
+              <div className="w-9 h-9 rounded-xl gradient-primary flex items-center justify-center">
+                <Leaf className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <div className="font-bold bg-gradient-to-r from-emerald-700 to-sky-600 bg-clip-text text-transparent">AgroLens</div>
+                <div className="text-xs text-muted-foreground">AI Crop Intelligence</div>
+              </div>
             </div>
-            <div>
-              <div className="font-bold bg-gradient-to-r from-emerald-700 to-sky-600 bg-clip-text text-transparent">AgroLens</div>
-              <div className="text-xs text-muted-foreground">AI Crop Intelligence</div>
-            </div>
+            <button
+              onClick={toggle}
+              className="w-8 h-8 rounded-lg bg-white/70 border border-border/50 flex items-center justify-center hover:bg-white/90 dark:bg-card/80 dark:border-border/50"
+              aria-label="Toggle theme"
+            >
+              {theme === "dark" ? (
+                <Sun className="h-4 w-4 text-amber-400" />
+              ) : (
+                <Moon className="h-4 w-4 text-slate-500" />
+              )}
+            </button>
           </div>
 
           <div className="mb-6">

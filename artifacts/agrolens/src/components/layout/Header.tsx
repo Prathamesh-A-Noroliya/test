@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Leaf, Menu, X, Globe, ChevronDown } from "lucide-react";
+import { Leaf, Menu, X, Globe, ChevronDown, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/lib/auth";
 import { useLanguage, type LangCode } from "@/lib/language-context";
+import { useTheme } from "@/lib/theme-context";
 
 const LANGUAGES: { code: LangCode; label: string; nativeLabel: string }[] = [
   { code: "EN", label: "English",  nativeLabel: "English"  },
@@ -24,6 +25,7 @@ interface HeaderProps {
 export default function Header({ onMenuToggle, sidebarOpen }: HeaderProps) {
   const { user } = useAuth();
   const { lang, setLang, t } = useLanguage();
+  const { theme, toggle } = useTheme();
 
   const currentLang = LANGUAGES.find((l) => l.code === lang) ?? LANGUAGES[0];
 
@@ -69,6 +71,21 @@ export default function Header({ onMenuToggle, sidebarOpen }: HeaderProps) {
       </div>
 
       <div className="flex items-center gap-2">
+        {/* Theme toggle */}
+        <Button
+          variant="outline"
+          size="icon"
+          className="w-8 h-8 rounded-lg bg-white/70 border-white/60 hover:bg-white/90 dark:bg-card/80 dark:border-border/50"
+          onClick={toggle}
+          aria-label="Toggle theme"
+        >
+          {theme === "dark" ? (
+            <Sun className="h-4 w-4 text-amber-400" />
+          ) : (
+            <Moon className="h-4 w-4 text-slate-500" />
+          )}
+        </Button>
+
         {/* Language toggle */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

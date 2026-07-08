@@ -174,6 +174,91 @@
   --destructive-border: hsl(from hsl(var(--destructive)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
 }
 
+/* ─── DARK MODE ──────────────────────────────────────── */
+.dark {
+  --button-outline: rgba(255, 255, 255, 0.07);
+  --badge-outline: rgba(255, 255, 255, 0.04);
+  --opaque-button-border-intensity: 7;
+  --elevate-1: rgba(255, 255, 255, 0.025);
+  --elevate-2: rgba(255, 255, 255, 0.05);
+
+  --background: 220 25% 8%;
+  --foreground: 210 20% 92%;
+
+  --border: 220 15% 22%;
+  --input: 220 15% 22%;
+  --ring: 142 55% 42%;
+
+  --card: 220 22% 12%;
+  --card-foreground: 210 20% 92%;
+  --card-border: 220 15% 25%;
+
+  --popover: 220 22% 12%;
+  --popover-foreground: 210 20% 92%;
+  --popover-border: 220 15% 25%;
+
+  --primary: 142 55% 42%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 220 18% 18%;
+  --secondary-foreground: 210 20% 88%;
+
+  --muted: 220 18% 18%;
+  --muted-foreground: 210 10% 55%;
+
+  --accent: 142 30% 18%;
+  --accent-foreground: 142 50% 75%;
+
+  --destructive: 0 65% 45%;
+  --destructive-foreground: 0 0% 100%;
+
+  --sidebar: 220 25% 10%;
+  --sidebar-foreground: 210 20% 90%;
+  --sidebar-border: 220 15% 20%;
+  --sidebar-primary: 142 55% 42%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 220 18% 16%;
+  --sidebar-accent-foreground: 210 20% 88%;
+  --sidebar-ring: 142 55% 42%;
+
+  --chart-1: 142 55% 42%;
+  --chart-2: 200 65% 48%;
+  --chart-3: 37 80% 48%;
+  --chart-4: 280 50% 55%;
+  --chart-5: 10 70% 48%;
+
+  --shadow-2xs: 0px 1px 2px 0px rgba(0, 0, 0, 0.15);
+  --shadow-xs:  0px 1px 3px 0px rgba(0, 0, 0, 0.2);
+  --shadow-sm:  0px 2px 5px 0px rgba(0, 0, 0, 0.25), 0px 1px 2px -1px rgba(0, 0, 0, 0.15);
+  --shadow:     0px 4px 10px 0px rgba(0, 0, 0, 0.3), 0px 2px 4px -2px rgba(0, 0, 0, 0.2);
+  --shadow-md:  0px 6px 16px 0px rgba(0, 0, 0, 0.35), 0px 3px 6px -2px rgba(0, 0, 0, 0.2);
+  --shadow-lg:  0px 10px 28px 0px rgba(0, 0, 0, 0.4), 0px 4px 10px -2px rgba(0, 0, 0, 0.25);
+  --shadow-xl:  0px 20px 44px 0px rgba(0, 0, 0, 0.45), 0px 8px 18px -4px rgba(0, 0, 0, 0.3);
+  --shadow-2xl: 0px 32px 64px 0px rgba(0, 0, 0, 0.5);
+}
+
+.dark body {
+  background: linear-gradient(
+    135deg,
+    hsl(220 25% 7%) 0%,
+    hsl(215 22% 9%) 35%,
+    hsl(200 20% 10%) 65%,
+    hsl(190 20% 11%) 100%
+  );
+}
+
+.dark ::-webkit-scrollbar-track { background: hsl(220 18% 12%); }
+.dark ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, hsl(142 40% 35%), hsl(200 45% 30%));
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, hsl(142 40% 42%), hsl(200 45% 38%));
+}
+.dark ::selection {
+  background: hsl(165 55% 42% / 0.25);
+  color: hsl(165 55% 85%);
+}
+
 /* ─── BASE LAYER ──────────────────────────────────────── */
 @layer base {
   * {

@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/lib/auth";
 import { ScanProvider } from "@/lib/scan-store";
 import { LanguageProvider } from "@/lib/language-context";
+import { ThemeProvider } from "@/lib/theme-context";
 import LoginPage from "@/pages/login";
 import RegisterPage from "@/pages/register";
 import DashboardPage from "@/pages/dashboard";
@@ -19,7 +20,7 @@ import ProfilePage from "@/pages/profile";
 import IrrigationPage from "@/pages/irrigation";
 import RecommendationsPage from "@/pages/recommendations";
 import AnalyticsPage from "@/pages/analytics";
-import { MessageSquare, Lightbulb } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 
 const queryClient = new QueryClient();
 
@@ -92,14 +93,16 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <LanguageProvider>
-          <AuthProvider>
-            <ScanProvider>
-              <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-                <Router />
-              </WouterRouter>
-              <Toaster />
-            </ScanProvider>
-          </AuthProvider>
+          <ThemeProvider>
+            <AuthProvider>
+              <ScanProvider>
+                <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+                  <Router />
+                </WouterRouter>
+                <Toaster />
+              </ScanProvider>
+            </AuthProvider>
+          </ThemeProvider>
         </LanguageProvider>
       </TooltipProvider>
     </QueryClientProvider>
