@@ -2,259 +2,282 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
 import {
-  CheckCircle2, Star, Zap, Shield, Leaf, ArrowRight,
-  ChevronLeft, Sparkles, Lock,
+  CheckCircle2, Star, Zap, Droplets, Camera, BrainCircuit,
+  Users, ArrowRight, ChevronLeft, Sparkles, ToggleLeft, ToggleRight,
 } from "lucide-react";
 import AppLayout from "@/components/layout/AppLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/language-context";
-import { cn } from "@/lib/utils";
 
-/* ─── Pricing constants ──────────────────────────────── */
-
-export const PRICING = {
-  monthly: { amount: 79, label: "₹79", total: "₹79 billed monthly", saving: null },
-  yearly:  { amount: 849, label: "₹849", total: "₹849 billed yearly", perMonth: "₹70.75/month", saving: "Save ₹99/year" },
-};
-
-/* ─── Feature list (translated in component) ─────────── */
-
-const FEATURE_KEYS = [
-  "sub.feat.scans",
-  "sub.feat.bhoomi",
-  "sub.feat.protocols",
-  "sub.feat.fertilizer",
-  "sub.feat.history",
-  "sub.feat.weather",
-  "sub.feat.market",
-  "sub.feat.support",
-  "sub.feat.offline",
-  "sub.feat.multifield",
+/* ──── Plan Builder Data ──────────────────────────────────────────── */
+const MODULES = [
+  {
+    id: "irrigation",
+    icon: Droplets,
+    name: "Automated Irrigation",
+    price: 20,
+    desc: "Smart soil moisture monitoring, auto-irrigation scheduling, and water usage analytics.",
+    color: "from-cyan-500 to-blue-500",
+    bg: "bg-cyan-50",
+    border: "border-cyan-200",
+    text: "text-cyan-700",
+  },
+  {
+    id: "scans",
+    icon: Camera,
+    name: "Unlimited Crop Scans",
+    price: 100,
+    desc: "Unlimited AI disease detection scans with full treatment protocols and expert reports.",
+    color: "from-violet-500 to-purple-500",
+    bg: "bg-violet-50",
+    border: "border-violet-200",
+    text: "text-violet-700",
+  },
+  {
+    id: "ai",
+    icon: BrainCircuit,
+    name: "AI Treatment Plans",
+    price: 200,
+    desc: "Personalised 10-day treatment schedules, fertiliser plans, organic alternatives, and charts.",
+    color: "from-amber-500 to-orange-500",
+    bg: "bg-amber-50",
+    border: "border-amber-200",
+    text: "text-amber-700",
+  },
+  {
+    id: "expert",
+    icon: Users,
+    name: "Expert Help",
+    price: 500,
+    desc: "Live chat with certified agronomists + 3 on-field farm visits per year.",
+    color: "from-emerald-500 to-teal-500",
+    bg: "bg-emerald-50",
+    border: "border-emerald-200",
+    text: "text-emerald-700",
+  },
 ];
+
+const FREE_FEATURES = [
+  "Soil Moisture Dashboard",
+  "Basic Field Monitoring",
+  "5 Crop Scans / month",
+  "2 AI Recommendations / month",
+  "Full Bhoomi Scan History",
+  "Basic Weather Forecast",
+  "Rainfall Overview",
+  "Manual Irrigation Logs",
+  "Community Support",
+];
+
+const YEARLY_BUNDLE = {
+  total: 6200,
+  monthly: 6200 / 12,
+  savings: (20 + 100 + 200 + 500) * 12 - 6200,
+};
 
 const container = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.1 } },
+  show: { transition: { staggerChildren: 0.08 } },
 };
 const item = {
-  hidden: { opacity: 0, y: 18 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.38, ease: "easeOut" } },
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" as const } },
 };
 
+/* ──── Page ─────────────────────────────────────────────────────────── */
 export default function SubscriptionPage() {
   const [, navigate] = useLocation();
   const { t } = useLanguage();
-  const [selected, setSelected] = useState<"monthly" | "yearly">("yearly");
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [yearly, setYearly] = useState(false);
 
-  const PLANS = [
-    {
-      id: "monthly" as const,
-      label: t("sub.monthly"),
-      price: PRICING.monthly.label,
-      period: t("sub.perMonth"),
-      total: PRICING.monthly.total,
-      saving: null,
-      badge: null,
-      highlight: false,
-      description: t("sub.monthly.desc"),
-    },
-    {
-      id: "yearly" as const,
-      label: t("sub.yearly"),
-      price: PRICING.yearly.label,
-      period: t("sub.yearly.period"),
-      total: PRICING.yearly.total,
-      saving: PRICING.yearly.saving,
-      badge: t("sub.bestValue"),
-      highlight: true,
-      description: t("sub.yearly.desc"),
-    },
-  ];
+  const toggleModule = (id: string) => {
+    const next = new Set(selected);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    setSelected(next);
+  };
 
-  const TRUST_BADGES = [
-    { icon: Shield, label: t("sub.cancelAnytime") },
-    { icon: Lock,   label: t("sub.secure") },
-    { icon: Star,   label: t("sub.farmers") },
-    { icon: Leaf,   label: t("sub.madeInIndia") },
-  ];
+  const selectedModules = MODULES.filter((m) => selected.has(m.id));
+  const monthlyTotal = selectedModules.reduce((s, m) => s + m.price, 0);
+  const yearlyTotal = yearly ? monthlyTotal * 12 : 0;
+  const isAllSelected = MODULES.every((m) => selected.has(m.id));
 
   return (
     <AppLayout>
-      <motion.div variants={container} initial="hidden" animate="show" className="max-w-2xl mx-auto space-y-6">
+      <motion.div variants={container} initial="hidden" animate="show" className="max-w-lg mx-auto space-y-5 pb-6">
 
         {/* Header */}
         <motion.div variants={item}>
           <button onClick={() => navigate("/dashboard")} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-3">
-            <ChevronLeft className="h-4 w-4" /> {t("common.back")}
+            <ChevronLeft className="h-4 w-4" /> Back
           </button>
-          <div className="text-center space-y-2">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-emerald-600 flex items-center justify-center mx-auto shadow-md">
+          <div className="text-center space-y-1">
+            <div className="w-14 h-14 rounded-2xl gradient-primary flex items-center justify-center mx-auto shadow-md">
               <Sparkles className="h-7 w-7 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-foreground">{t("sub.unlock")}</h1>
-            <p className="text-muted-foreground text-sm max-w-sm mx-auto">
-              {t("sub.unlockDesc")}
-            </p>
+            <h1 className="text-2xl font-bold text-foreground">Build Your Plan</h1>
+            <p className="text-muted-foreground text-sm">Pick only what your farm needs</p>
           </div>
         </motion.div>
 
-        {/* Plan Toggle */}
+        {/* Monthly / Yearly toggle */}
         <motion.div variants={item}>
-          <div className="flex items-center justify-center gap-3 mb-4">
-            {PLANS.map((plan) => (
+          <div className="flex items-center justify-center">
+            <div className="inline-flex items-center gap-2 bg-muted rounded-full p-1">
               <button
-                key={plan.id}
-                onClick={() => setSelected(plan.id)}
-                className={cn(
-                  "px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200",
-                  selected === plan.id
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "bg-muted text-muted-foreground hover:bg-muted/80"
-                )}
+                onClick={() => setYearly(false)}
+                className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${!yearly ? "bg-white shadow-sm text-foreground" : "text-muted-foreground"}`}
               >
-                {plan.label}
-                {plan.saving && selected === plan.id && (
-                  <span className="ml-2 text-[10px] bg-primary-foreground/20 text-primary-foreground px-1.5 py-0.5 rounded-full">
-                    {t("sub.save")}
-                  </span>
-                )}
+                Monthly
               </button>
-            ))}
-          </div>
-
-          {/* Plan Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {PLANS.map((plan) => (
-              <motion.div
-                key={plan.id}
-                whileHover={{ y: -2 }}
-                onClick={() => setSelected(plan.id)}
-                className={cn(
-                  "relative rounded-2xl border-2 p-5 cursor-pointer transition-all duration-200",
-                  selected === plan.id
-                    ? "border-primary bg-primary/5 shadow-md"
-                    : "border-border/60 bg-card hover:border-primary/40"
-                )}
+              <button
+                onClick={() => setYearly(true)}
+                className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${yearly ? "bg-white shadow-sm text-foreground" : "text-muted-foreground"}`}
               >
-                {plan.badge && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="bg-primary text-primary-foreground text-[10px] font-bold px-3 py-1 rounded-full shadow-sm">
-                      {plan.badge}
-                    </span>
-                  </div>
-                )}
+                Yearly
+                <span className="ml-1 text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full">Save more</span>
+              </button>
+            </div>
+          </div>
+        </motion.div>
 
-                {/* Free tier label for comparison */}
-                {plan.id === "monthly" && (
-                  <div className="absolute top-3 right-3">
-                    <span className="text-[10px] bg-muted text-muted-foreground font-semibold px-2 py-0.5 rounded-full border border-border/60">
-                      {t("sub.flexible")}
-                    </span>
-                  </div>
-                )}
+        {/* Free plan reminder */}
+        <motion.div variants={item}>
+          <div className="rounded-2xl p-4 border border-border/60 bg-muted/30">
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-2">Free Plan Includes</p>
+            <div className="flex flex-wrap gap-2">
+              {FREE_FEATURES.map((f) => (
+                <span key={f} className="text-[11px] bg-white/80 border border-border/50 rounded-full px-2.5 py-1 text-muted-foreground">
+                  {f}
+                </span>
+              ))}
+            </div>
+          </div>
+        </motion.div>
 
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">{plan.label}</p>
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-3xl font-bold text-foreground">{plan.price}</span>
-                      <span className="text-sm text-muted-foreground">{plan.period}</span>
+        {/* Module Cards */}
+        <motion.div variants={item} className="space-y-3">
+          <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide">Premium Modules</p>
+          {MODULES.map((mod) => {
+            const isOn = selected.has(mod.id);
+            const Icon = mod.icon;
+            return (
+              <motion.div
+                key={mod.id}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => toggleModule(mod.id)}
+                className={`rounded-2xl border-2 p-4 cursor-pointer transition-all duration-200 ${
+                  isOn
+                    ? `border-transparent shadow-md`
+                    : "border-border/50 bg-card hover:border-border"
+                }`}
+                style={isOn ? {
+                  background: `linear-gradient(135deg, hsl(142 30% 97%) 0%, hsl(196 25% 97%) 100%)`,
+                  borderColor: "hsl(170 30% 85%)",
+                } : {}}
+              >
+                <div className="flex items-start gap-3">
+                  <div className={`w-10 h-10 rounded-xl shrink-0 flex items-center justify-center ${mod.bg} border ${mod.border}`}>
+                    <Icon className={`h-5 w-5 ${mod.text}`} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-sm font-bold text-foreground">{mod.name}</p>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="text-sm font-bold text-foreground">₹{yearly ? mod.price * 12 : mod.price}{yearly ? "/yr" : "/mo"}</span>
+                        {isOn ? (
+                          <ToggleRight className="h-6 w-6 text-emerald-500" />
+                        ) : (
+                          <ToggleLeft className="h-6 w-6 text-muted-foreground" />
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  <div className={cn("w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all", selected === plan.id ? "border-primary bg-primary" : "border-border/60")}>
-                    {selected === plan.id && <CheckCircle2 className="h-4 w-4 text-primary-foreground" />}
+                    <p className="text-xs text-muted-foreground mt-1 leading-snug">{mod.desc}</p>
                   </div>
                 </div>
-
-                <p className="text-xs text-muted-foreground">{plan.description}</p>
-                <p className="text-xs text-muted-foreground mt-2">{plan.total}</p>
-
-                {plan.id === "yearly" && (
-                  <p className="text-[11px] text-muted-foreground mt-1">{PRICING.yearly.perMonth} {t("sub.effective")}</p>
-                )}
-
-                {plan.saving && (
-                  <div className="mt-2 inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-semibold px-2 py-0.5 rounded-full">
-                    <Zap className="h-3 w-3" /> {plan.saving}
-                  </div>
-                )}
               </motion.div>
-            ))}
+            );
+          })}
+        </motion.div>
+
+        {/* Yearly Pro Bundle (when all selected) */}
+        <AnimatePresence>
+          {isAllSelected && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="overflow-hidden"
+            >
+              <div
+                className="rounded-2xl p-5 border-2 border-emerald-300 shadow-md"
+                style={{ background: "linear-gradient(135deg, hsl(142 40% 96%) 0%, hsl(170 35% 95%) 100%)" }}
+              >
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center">
+                    <Star className="h-4 w-4 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-foreground">Yearly AgroLens Pro Bundle</p>
+                    <p className="text-[11px] text-emerald-700 font-semibold">Best value — includes everything</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-2 mb-3">
+                  <div className="text-center bg-white/70 rounded-xl p-2 border border-emerald-100">
+                    <p className="text-lg font-bold text-foreground">₹{YEARLY_BUNDLE.total}</p>
+                    <p className="text-[10px] text-muted-foreground">per year</p>
+                  </div>
+                  <div className="text-center bg-white/70 rounded-xl p-2 border border-emerald-100">
+                    <p className="text-lg font-bold text-emerald-600">₹{Math.round(YEARLY_BUNDLE.monthly)}</p>
+                    <p className="text-[10px] text-muted-foreground">per month</p>
+                  </div>
+                  <div className="text-center bg-emerald-50 rounded-xl p-2 border border-emerald-200">
+                    <p className="text-lg font-bold text-emerald-600">₹{YEARLY_BUNDLE.savings}</p>
+                    <p className="text-[10px] text-emerald-700">saved / yr</p>
+                  </div>
+                </div>
+                <Button
+                  className="w-full h-12 rounded-xl font-bold text-white border-0 shadow-md"
+                  style={{ background: "linear-gradient(135deg, hsl(142 62% 36%), hsl(196 70% 44%))" }}
+                  onClick={() => navigate("/checkout")}
+                >
+                  <Star className="h-4 w-4" /> Get Pro Bundle — ₹{YEARLY_BUNDLE.total}/yr
+                </Button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Price summary */}
+        <motion.div variants={item}>
+          <div className="rounded-2xl p-4 border border-border/60 bg-muted/20">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-sm font-semibold text-muted-foreground">Your Plan Total</p>
+              <p className="text-2xl font-bold text-foreground">₹{yearly ? Math.round(monthlyTotal * 12) : monthlyTotal}<span className="text-sm text-muted-foreground font-normal">{yearly ? "/yr" : "/mo"}</span></p>
+            </div>
+            {selectedModules.length > 0 && (
+              <div className="space-y-1 mb-3">
+                {selectedModules.map((m) => (
+                  <div key={m.id} className="flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground">{m.name}</span>
+                    <span className="font-semibold text-foreground">₹{yearly ? m.price * 12 : m.price}{yearly ? "/yr" : "/mo"}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            <Button
+              className="w-full h-12 rounded-xl font-bold gap-2"
+              disabled={selectedModules.length === 0}
+              onClick={() => navigate("/checkout")}
+            >
+              <ArrowRight className="h-4 w-4" />
+              {selectedModules.length === 0 ? "Select at least one module" : `Continue — ₹${yearly ? Math.round(monthlyTotal * 12) : monthlyTotal}${yearly ? "/yr" : "/mo"}`}
+            </Button>
           </div>
         </motion.div>
 
-        {/* Features List */}
-        <motion.div variants={item}>
-          <Card className="rounded-2xl border-border/60 shadow-sm">
-            <CardContent className="p-5">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-4">{t("sub.everything")}</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2.5 gap-x-4">
-                {FEATURE_KEYS.map((key, i) => (
-                  <motion.div
-                    key={key}
-                    initial={{ opacity: 0, x: -8 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.4 + i * 0.05 }}
-                    className="flex items-center gap-2"
-                  >
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
-                    <span className="text-sm text-foreground">{t(key)}</span>
-                  </motion.div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* Free vs Premium comparison strip */}
-        <motion.div variants={item}>
-          <Card className="rounded-2xl border-border/60 shadow-sm overflow-hidden">
-            <div className="grid grid-cols-3 text-center text-xs font-semibold bg-muted/50 border-b border-border/60 divide-x divide-border/60">
-              <div className="py-2.5 text-muted-foreground">{t("sub.feature")}</div>
-              <div className="py-2.5 text-muted-foreground">{t("sub.free")}</div>
-              <div className="py-2.5 text-primary">{t("sub.pro")}</div>
-            </div>
-            {[
-              { feature: t("sub.comp.scans"),    free: "3/month",  pro: t("sub.unlimited") },
-              { feature: t("sub.comp.bhoomi"),   free: "❌",       pro: "✅" },
-              { feature: t("sub.comp.protocols"),free: "❌",       pro: "✅" },
-              { feature: t("sub.comp.expert"),   free: "❌",       pro: "✅" },
-            ].map(({ feature, free, pro }) => (
-              <div key={feature} className="grid grid-cols-3 text-center text-xs divide-x divide-border/60 border-b border-border/60 last:border-b-0">
-                <div className="py-2.5 px-2 text-muted-foreground text-left">{feature}</div>
-                <div className="py-2.5 text-muted-foreground">{free}</div>
-                <div className="py-2.5 text-emerald-600 font-semibold">{pro}</div>
-              </div>
-            ))}
-          </Card>
-        </motion.div>
-
-        {/* Trust badges */}
-        <motion.div variants={item} className="flex items-center justify-center gap-6 flex-wrap">
-          {TRUST_BADGES.map(({ icon: Icon, label }) => (
-            <div key={label} className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <Icon className="h-3.5 w-3.5 text-primary" />
-              {label}
-            </div>
-          ))}
-        </motion.div>
-
-        {/* CTA */}
-        <motion.div variants={item} className="pb-4">
-          <Button
-            className="w-full h-13 rounded-xl font-bold text-base gap-2 shadow-sm"
-            size="lg"
-            onClick={() => navigate("/checkout")}
-          >
-            <Sparkles className="h-5 w-5" />
-            {t("sub.continueTo")} — {selected === "yearly" ? `₹849/yr` : `₹79/mo`}
-            <ArrowRight className="h-5 w-5" />
-          </Button>
-          <p className="text-center text-xs text-muted-foreground mt-2.5">
-            {t("sub.trial")}
-          </p>
-        </motion.div>
       </motion.div>
     </AppLayout>
   );

@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import {
   LayoutDashboard, Camera, Lightbulb, History,
   MessageSquare, User, Leaf, LogOut, X, Star,
-  CreditCard, Sparkles, Droplets,
+  CreditCard, Sparkles, Droplets, BarChart3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,7 @@ const NAV_ITEMS: NavItem[] = [
   { icon: Lightbulb,       labelKey: "nav.recommendations",  href: "/recommendations" },
   { icon: Droplets,        labelKey: "nav.irrigation",       href: "/irrigation" },
   { icon: History,         labelKey: "nav.history",          href: "/history" },
+  { icon: BarChart3,       labelKey: "nav.analytics",        href: "/analytics" },
   { icon: MessageSquare,   labelKey: "nav.bhoomi",           href: "__bhoomi__" },
   { icon: User,            labelKey: "nav.profile",          href: "/profile" },
 ];

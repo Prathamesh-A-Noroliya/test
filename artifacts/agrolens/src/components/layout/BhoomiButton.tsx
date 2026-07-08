@@ -123,10 +123,25 @@ function detectNavCommand(transcript: string): { path: string; label: string } |
 }
 
 /* ─── Global type declaration ────────────────────────── */
+interface SpeechRecognition extends EventTarget {
+  lang: string;
+  continuous: boolean;
+  interimResults: boolean;
+  start(): void;
+  stop(): void;
+  abort(): void;
+  onstart: ((this: SpeechRecognition, ev: Event) => void) | null;
+  onresult: ((this: SpeechRecognition, ev: Event) => void) | null;
+  onend: ((this: SpeechRecognition, ev: Event) => void) | null;
+  onerror: ((this: SpeechRecognition, ev: Event) => void) | null;
+}
+interface SpeechRecognitionCtor {
+  new (): SpeechRecognition;
+}
 declare global {
   interface Window {
-    SpeechRecognition: typeof SpeechRecognition;
-    webkitSpeechRecognition: typeof SpeechRecognition;
+    SpeechRecognition: SpeechRecognitionCtor;
+    webkitSpeechRecognition: SpeechRecognitionCtor;
   }
 }
 

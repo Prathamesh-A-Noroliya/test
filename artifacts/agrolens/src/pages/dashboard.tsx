@@ -1,576 +1,485 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
-  Camera, CloudUpload, History, Bell, CheckCircle2,
-  AlertTriangle, TrendingUp, Star, Leaf, Sun, Droplets,
-  Wind, CloudRain, Thermometer, Zap, ArrowRight, Sparkles,
-  ShieldCheck, Clock, FlaskConical, Sprout,
+  Camera, History, CheckCircle2, AlertTriangle,
+  Leaf, Sun, CloudRain, Droplets, Wind,
+  Zap, Sparkles, TrendingUp,
+  ChevronRight, Gauge, Sprout, Waves, Flame, Umbrella,
+  MapPin,
 } from "lucide-react";
 import { useLocation } from "wouter";
 import {
   PieChart, Pie, Cell, Tooltip, ResponsiveContainer,
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
+  AreaChart, Area,
 } from "recharts";
 import AppLayout from "@/components/layout/AppLayout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/lib/auth";
 import { useLanguage } from "@/lib/language-context";
 
-/* ─── Mock Data ─────────────────────────────────────── */
-
+/* ──── Data ──────────────────────────────────────────── */
 const HEALTH_DONUT = [
-  { nameKey: "dashboard.healthy",  value: 62, color: "#22c55e" },
-  { nameKey: "dashboard.atRisk",   value: 21, color: "#f59e0b" },
-  { nameKey: "dashboard.diseased", value: 11, color: "#ef4444" },
-  { nameKey: "dashboard.unknown",  value: 6,  color: "#cbd5e1" },
+  { name: "Healthy",  value: 62, color: "#22c55e" },
+  { name: "At Risk",  value: 21, color: "#f59e0b" },
+  { name: "Diseased", value: 11, color: "#ef4444" },
+  { name: "Unknown",  value: 6,  color: "#cbd5e1" },
 ];
 
 const WEEKLY_SCANS = [
-  { day: "Mon", scans: 3 },
-  { day: "Tue", scans: 5 },
-  { day: "Wed", scans: 2 },
-  { day: "Thu", scans: 7 },
-  { day: "Fri", scans: 4 },
-  { day: "Sat", scans: 6 },
+  { day: "Mon", scans: 3 }, { day: "Tue", scans: 5 }, { day: "Wed", scans: 2 },
+  { day: "Thu", scans: 7 }, { day: "Fri", scans: 4 }, { day: "Sat", scans: 6 },
   { day: "Sun", scans: 1 },
 ];
 
-const SCAN_HISTORY = [
-  { crop: "Wheat", field: "Field A", result: "Rust detected", severity: "high", dateKey: "dashboard.today", dateExtra: ", 10:24 AM" },
-  { crop: "Rice",   field: "Field B", result: "Minor leaf blight", severity: "medium", dateKey: "dashboard.yesterday", dateExtra: "" },
-  { crop: "Tomato", field: "Greenhouse", result: "All healthy", severity: "low", dateKey: "", dateExtra: "2 days ago" },
-  { crop: "Cotton", field: "Field C", result: "Aphid infestation", severity: "high", dateKey: "", dateExtra: "3 days ago" },
+const IRRIGATION_LOG = [
+  { day: "Mon", water: 320 }, { day: "Tue", water: 0 }, { day: "Wed", water: 450 },
+  { day: "Thu", water: 0 },   { day: "Fri", water: 380 }, { day: "Sat", water: 0 },
+  { day: "Sun", water: 290 },
 ];
 
-const RECOMMENDATIONS = [
-  {
-    icon: FlaskConical,
-    category: "Pesticide",
-    catBg: "bg-red-50", catColor: "text-red-600", catBorder: "border-red-200",
-    priority: "Urgent", priDot: "bg-red-500", priText: "text-red-600",
-    text: "Apply Propiconazole 25% EC (1 ml/L) to wheat in Field A.",
-    detail: "Yellow Rust detected — act within 48 hours to prevent 15–30% yield loss.",
-  },
-  {
-    icon: Sprout,
-    category: "Organic",
-    catBg: "bg-emerald-50", catColor: "text-emerald-600", catBorder: "border-emerald-200",
-    priority: "Moderate", priDot: "bg-amber-400", priText: "text-amber-600",
-    text: "Apply Neem Oil (5 ml/L) spray on rice in Field B.",
-    detail: "Minor leaf blight — neem oil controls spread and repels insect vectors.",
-  },
-  {
-    icon: ShieldCheck,
-    category: "Preventive",
-    catBg: "bg-blue-50", catColor: "text-blue-600", catBorder: "border-blue-200",
-    priority: "Tip", priDot: "bg-blue-400", priText: "text-blue-600",
-    text: "Rotate Field C to legumes next season.",
-    detail: "3-year aphid infestation history — crop rotation breaks the pest cycle.",
-  },
+const FIELD_STATUS = [
+  { field: "Field A", crop: "Wheat", status: "diseased",  issue: "Yellow Rust detected", soil: 38, action: "Apply Propiconazole today" },
+  { field: "Field B", crop: "Rice",  status: "at-risk",   issue: "Minor leaf blight",    soil: 55, action: "Neem oil spray recommended" },
+  { field: "Field C", crop: "Cotton",status: "diseased",  issue: "Aphid infestation",      soil: 42, action: "Imidacloprid spray ASAP" },
+  { field: "Field D", crop: "Tomato", status: "healthy",   issue: "All healthy",           soil: 68, action: "No action needed" },
 ];
 
-const HOURLY_RAIN = [
-  { time: "6AM",  mm: 0 },
-  { time: "9AM",  mm: 0 },
-  { time: "12PM", mm: 2 },
-  { time: "3PM",  mm: 5 },
-  { time: "6PM",  mm: 3 },
-  { time: "9PM",  mm: 1 },
+const TASKS = [
+  { done: false, icon: Droplets,    color: "text-blue-600",  bg: "bg-blue-50",  text: "Irrigate Field A before 10:30 AM",     sub: "Soil moisture at 38% — below optimal" },
+  { done: true,  icon: Umbrella,    color: "text-sky-600",   bg: "bg-sky-50",   text: "Delay pesticide spraying on Field B", sub: "Rain expected in 3 hours — save water" },
+  { done: false, icon: Camera,       color: "text-violet-600",bg: "bg-violet-50",text: "Scan tomato crop in Field D",          sub: "5 days since last scan — recommended weekly" },
+  { done: false, icon: Sprout,      color: "text-amber-600", bg: "bg-amber-50", text: "Nitrogen deficiency alert — Field C",   sub: "Apply urea 20 kg/acre after pest control" },
+  { done: false, icon: Waves,       color: "text-cyan-600",  bg: "bg-cyan-50",  text: "Rainwater harvesting setup",           sub: "11 mm expected today — collect runoff" },
 ];
 
-/* ─── Animation Variants ────────────────────────────── */
-
+/* ──── Animation ──────────────────────────────────────── */
 const container = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.08 } },
+  show: { transition: { staggerChildren: 0.07 } },
 };
-
 const item = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.38, ease: "easeOut" } },
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" as const } },
 };
 
-/* ─── Severity helpers ───────────────────────────────── */
-
-const severityBadge: Record<string, string> = {
-  high:   "bg-red-50 text-red-600 border-red-200",
-  medium: "bg-amber-50 text-amber-600 border-amber-200",
-  low:    "bg-emerald-50 text-emerald-600 border-emerald-200",
+const statusConfig: Record<string, { label: string; dot: string; bar: string; text: string }> = {
+  healthy:   { label: "Healthy",   dot: "bg-emerald-500", bar: "bg-emerald-500", text: "text-emerald-700" },
+  "at-risk": { label: "At Risk",   dot: "bg-amber-400",  bar: "bg-amber-400",  text: "text-amber-700" },
+  diseased:  { label: "Diseased",  dot: "bg-red-500",    bar: "bg-red-500",    text: "text-red-700" },
 };
 
-/* ─── Component ──────────────────────────────────────── */
-
+/* ──── Component ──────────────────────────────────────── */
 export default function DashboardPage() {
   const { user } = useAuth();
   const [, navigate] = useLocation();
   const { t } = useLanguage();
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [hour, setHour] = useState(0);
 
-  const today = new Date().toLocaleDateString("en-IN", {
-    weekday: "long", day: "numeric", month: "long",
-  });
+  useEffect(() => { setHour(new Date().getHours()); }, []);
+
+  const greeting = hour < 12 ? "Good Morning" : hour < 17 ? "Good Afternoon" : "Good Evening";
+  const farmingScore = 92;
+  const soilMoisture = 41;
 
   return (
     <AppLayout>
-      <motion.div
-        variants={container}
-        initial="hidden"
-        animate="show"
-        className="space-y-5"
-      >
-        {/* ── Welcome Banner ───────────────────────────── */}
+      <motion.div variants={container} initial="hidden" animate="show" className="space-y-6 pb-20">
+
+        {/* ── Welcome Header ──────────────────────────────────────────────── */}
         <motion.div variants={item}>
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 via-primary to-emerald-700 p-6 text-white shadow-md">
-            <div className="absolute -top-8 -right-8 w-40 h-40 rounded-full bg-white/10 pointer-events-none" />
-            <div className="absolute -bottom-12 right-20 w-56 h-56 rounded-full bg-white/5 pointer-events-none" />
-            <div className="absolute top-4 right-4 opacity-20 pointer-events-none">
-              <Leaf className="h-20 w-20 text-white" />
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-xs font-medium text-muted-foreground">{greeting} 👋</p>
+              <h1 className="text-xl sm:text-2xl font-bold text-foreground mt-0.5 leading-tight">
+                {user?.fullName.split(" ")[0]}
+              </h1>
+              <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
+                <MapPin className="h-3 w-3" /> Pune, Maharashtra
+              </p>
             </div>
-
-            <div className="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div>
-                <p className="text-emerald-100 text-sm font-medium mb-1">{today}</p>
-                <h1 className="text-2xl sm:text-3xl font-bold leading-tight">
-                  {t("dashboard.welcome")}, {user?.fullName.split(" ")[0]}!
-                </h1>
-                <p className="text-emerald-100 text-sm mt-1.5">
-                  Your farm is being monitored. Here's today's overview.
-                </p>
-              </div>
-              <div className="flex flex-col gap-2 shrink-0">
-                <div className="flex items-center gap-2 bg-white/15 backdrop-blur-sm rounded-xl px-3 py-2 text-sm">
-                  <Leaf className="h-4 w-4 text-emerald-200" />
-                  <span className="text-white/80 text-xs">Farmer ID</span>
-                  <span className="font-mono font-bold text-white">{user?.farmerId}</span>
-                </div>
-                <div className="flex items-center gap-2 bg-white/15 backdrop-blur-sm rounded-xl px-3 py-2 text-sm">
-                  <ShieldCheck className="h-4 w-4 text-emerald-200" />
-                  <span className="text-white/80 text-xs">Crop</span>
-                  <span className="font-semibold text-white capitalize">{user?.cropType ?? "—"}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="relative z-10 mt-5 flex items-center gap-3 flex-wrap">
-              {[
-                { icon: Camera,        label: "24 Scans",        bg: "bg-white/15" },
-                { icon: AlertTriangle, label: "3 Active Issues", bg: "bg-red-400/30" },
-                { icon: TrendingUp,    label: "87% Health",      bg: "bg-white/15" },
-              ].map(({ icon: Icon, label, bg }) => (
-                <div key={label} className={`flex items-center gap-1.5 ${bg} rounded-full px-3 py-1 text-xs font-medium text-white`}>
-                  <Icon className="h-3.5 w-3.5" />
-                  {label}
-                </div>
-              ))}
+            <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 rounded-full px-2.5 py-1 text-xs font-bold text-emerald-700">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              Pro Plan
             </div>
           </div>
         </motion.div>
 
-        {/* ── Quick Actions ────────────────────────────── */}
-        <motion.div variants={item}>
-          <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-3">
-            {t("dashboard.quickActions")}
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {/* Scan Crop */}
-            <motion.button
-              whileHover={{ scale: 1.015, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => navigate("/scan")}
-              className="relative overflow-hidden group bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-5 text-left shadow-md hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
-            >
-              <div className="absolute -right-4 -bottom-4 w-24 h-24 rounded-full bg-white/10 pointer-events-none" />
-              <div className="absolute right-4 top-4 opacity-20 group-hover:opacity-30 transition-opacity pointer-events-none">
-                <Camera className="h-16 w-16 text-white" />
-              </div>
-              <div className="relative z-10">
-                <div className="w-11 h-11 rounded-xl bg-white/20 flex items-center justify-center mb-4">
-                  <Camera className="h-6 w-6 text-white" />
-                </div>
-                <p className="text-white font-bold text-lg leading-tight">{t("dashboard.scanCrop")}</p>
-                <p className="text-blue-100 text-sm mt-1">{t("dashboard.scanCropDesc")}</p>
-                <div className="mt-4 flex items-center gap-1 text-white/80 text-xs font-medium">
-                  {t("dashboard.scanCrop")} <ArrowRight className="h-3.5 w-3.5" />
-                </div>
-              </div>
-            </motion.button>
-
-            {/* Upload Image */}
-            <motion.button
-              whileHover={{ scale: 1.015, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => navigate("/scan")}
-              className="relative overflow-hidden group bg-gradient-to-br from-violet-500 to-purple-600 rounded-2xl p-5 text-left shadow-md hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-offset-2"
-            >
-              <div className="absolute -right-4 -bottom-4 w-24 h-24 rounded-full bg-white/10 pointer-events-none" />
-              <div className="absolute right-4 top-4 opacity-20 group-hover:opacity-30 transition-opacity pointer-events-none">
-                <CloudUpload className="h-16 w-16 text-white" />
-              </div>
-              <div className="relative z-10">
-                <div className="w-11 h-11 rounded-xl bg-white/20 flex items-center justify-center mb-4">
-                  <CloudUpload className="h-6 w-6 text-white" />
-                </div>
-                <p className="text-white font-bold text-lg leading-tight">{t("dashboard.viewHistory")}</p>
-                <p className="text-violet-100 text-sm mt-1">{t("dashboard.viewHistoryDesc")}</p>
-                <div className="mt-4 flex items-center gap-1 text-white/80 text-xs font-medium">
-                  {t("dashboard.viewHistory")} <ArrowRight className="h-3.5 w-3.5" />
-                </div>
-              </div>
-            </motion.button>
-          </div>
+        {/* ── Quick Actions ─────────────────────────────────────────────── */}
+        <motion.div variants={item} className="flex gap-3">
+          <motion.button
+            whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
+            onClick={() => navigate("/scan")}
+            className="flex-1 relative overflow-hidden rounded-2xl p-4 text-left shadow-sm"
+            style={{ background: "linear-gradient(135deg, hsl(142 62% 36%), hsl(196 70% 44%))" }}
+          >
+            <Camera className="h-6 w-6 text-white/90 mb-3" />
+            <p className="text-white font-bold text-sm leading-tight">AI Scan</p>
+            <p className="text-white/70 text-[11px] mt-0.5">Detect diseases instantly</p>
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
+            onClick={() => navigate("/irrigation")}
+            className="flex-1 relative overflow-hidden rounded-2xl p-4 text-left shadow-sm"
+            style={{ background: "linear-gradient(135deg, hsl(200 65% 48%), hsl(230 55% 52%))" }}
+          >
+            <Droplets className="h-6 w-6 text-white/90 mb-3" />
+            <p className="text-white font-bold text-sm leading-tight">Irrigate</p>
+            <p className="text-white/70 text-[11px] mt-0.5">Smart water management</p>
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
+            onClick={() => navigate("/history")}
+            className="flex-1 relative overflow-hidden rounded-2xl p-4 text-left shadow-sm"
+            style={{ background: "linear-gradient(135deg, hsl(30 75% 48%), hsl(15 65% 52%))" }}
+          >
+            <History className="h-6 w-6 text-white/90 mb-3" />
+            <p className="text-white font-bold text-sm leading-tight">History</p>
+            <p className="text-white/70 text-[11px] mt-0.5">Past scans & irrigation</p>
+          </motion.button>
         </motion.div>
 
-        {/* ── Data Cards Row ───────────────────────────── */}
-        <motion.div variants={item} className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-
-          {/* Scan History Summary */}
-          <Card className="rounded-2xl border-border/60 shadow-sm hover:shadow-md transition-shadow duration-200 group">
-            <CardHeader className="pb-2 pt-5 px-5">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
-                  <History className="h-4 w-4 text-primary" /> {t("nav.history")}
-                </CardTitle>
-                <Button variant="ghost" size="sm" className="h-7 text-xs text-primary px-2" onClick={() => navigate("/history")}>
-                  {t("dashboard.viewAll")}
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="px-5 pb-5 space-y-2">
-              {[
-                { label: "Total Scans", value: "24", icon: Camera,        color: "text-blue-500" },
-                { label: "Issues Found", value: "3", icon: AlertTriangle, color: "text-red-500" },
-                { label: "Resolved",    value: "21", icon: CheckCircle2,  color: "text-emerald-500" },
-              ].map(({ label, value, icon: Icon, color }) => (
-                <div key={label} className="flex items-center justify-between py-1.5 border-b border-border/40 last:border-0">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Icon className={`h-3.5 w-3.5 ${color}`} />
-                    {label}
-                  </div>
-                  <span className="font-bold text-foreground text-sm">{value}</span>
-                </div>
-              ))}
-              <div className="pt-1">
-                <div className="flex items-center justify-between text-xs text-muted-foreground mb-1.5">
-                  <span>Resolution rate</span>
-                  <span className="font-semibold text-emerald-600">87.5%</span>
-                </div>
-                <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                  <motion.div
-                    className="h-full bg-emerald-500 rounded-full"
-                    initial={{ width: 0 }}
-                    animate={{ width: "87.5%" }}
-                    transition={{ delay: 0.6, duration: 0.8, ease: "easeOut" }}
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Active Subscription */}
-          <Card className="rounded-2xl border-border/60 shadow-sm hover:shadow-md transition-shadow duration-200">
-            <CardHeader className="pb-2 pt-5 px-5">
-              <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
-                <Star className="h-4 w-4 text-amber-500" /> Subscription
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-5 pb-5 space-y-4">
+        {/* ── Farm Conditions (hero section) ─────────────────────────────── */}
+        <motion.div variants={item}>
+          <div
+            className="rounded-3xl p-5 shadow-sm relative overflow-hidden"
+            style={{
+              background: "linear-gradient(160deg, hsl(142 40% 97%) 0%, hsl(196 50% 96%) 50%, hsl(210 55% 95%) 100%)",
+              border: "1px solid hsl(170 30% 88%)",
+            }}
+          >
+            {/* Top row: temp + farming score */}
+            <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center border border-amber-200">
-                  <Zap className="h-5 w-5 text-amber-500" />
+                <div className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm"
+                  style={{ background: "linear-gradient(135deg, hsl(35 80% 55%), hsl(25 70% 48%))" }}>
+                  <Sun className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <p className="font-bold text-foreground text-sm">AgroLens Pro</p>
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-xs text-emerald-600 font-medium">Active</span>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-2xl font-bold text-foreground">28°</span>
+                    <span className="text-sm text-muted-foreground">Partly Cloudy</span>
                   </div>
+                  <p className="text-[11px] text-muted-foreground">Humidity 62% · Wind 12 km/h</p>
                 </div>
               </div>
-              <div className="space-y-2 text-xs text-muted-foreground">
-                {[
-                  "Unlimited AI scans",
-                  "BHOOMI voice assistant",
-                  "Market price alerts",
-                  "Priority support",
-                ].map((feat) => (
-                  <div key={feat} className="flex items-center gap-2">
-                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-                    <span>{feat}</span>
+              <div className="text-center">
+                <div className="relative w-14 h-14 mx-auto">
+                  <svg viewBox="0 0 60 60" className="w-14 h-14 -rotate-90">
+                    <circle cx="30" cy="30" r="24" fill="none" stroke="#e2e8f0" strokeWidth="6" />
+                    <circle cx="30" cy="30" r="24" fill="none" stroke="#22c55e" strokeWidth="6"
+                      strokeDasharray={`${farmingScore * 1.51} ${151 - farmingScore * 1.51}`}
+                      strokeLinecap="round" />
+                  </svg>
+                  <span className="absolute inset-0 flex items-center justify-center text-sm font-bold text-foreground">{farmingScore}</span>
+                </div>
+                <p className="text-[10px] font-semibold text-emerald-600 mt-0.5">Farm Score</p>
+              </div>
+            </div>
+
+            {/* Insight bar */}
+            <div className="flex items-start gap-2.5 bg-white/70 backdrop-blur-sm rounded-2xl px-4 py-3 border border-white/60 shadow-sm mb-4">
+              <Zap className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
+              <p className="text-sm font-semibold text-foreground">
+                Excellent conditions for irrigation before 11 AM
+              </p>
+            </div>
+
+            {/* Weather detail row */}
+            <div className="grid grid-cols-4 gap-2">
+              {[
+                { icon: CloudRain, label: "Rain", value: "11 mm", sub: "in ~3h", accent: true },
+                { icon: Droplets,  label: "Humidity", value: "62%", sub: "Optimal" },
+                { icon: Wind,      label: "Wind", value: "12 km/h", sub: "Calm" },
+                { icon: Flame,     label: "UV", value: "High", sub: "Use shade" },
+              ].map((w) => (
+                <div key={w.label} className={`text-center rounded-xl py-2.5 px-1 ${w.accent ? "bg-sky-50 border border-sky-100" : "bg-white/60 border border-white/50"}`}>
+                  <w.icon className={`h-4 w-4 mx-auto mb-1 ${w.accent ? "text-sky-500" : "text-muted-foreground"}`} />
+                  <p className={`text-sm font-bold ${w.accent ? "text-sky-700" : "text-foreground"}`}>{w.value}</p>
+                  <p className="text-[9px] text-muted-foreground leading-tight">{w.sub}</p>
+                  <p className="text-[9px] font-medium text-muted-foreground/70">{w.label}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Soil moisture mini-bar */}
+            <div className="mt-4 bg-white/60 rounded-xl px-3.5 py-2.5 border border-white/50 flex items-center gap-3">
+              <Gauge className="h-4 w-4 text-emerald-500 shrink-0" />
+              <div className="flex-1">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs font-semibold text-foreground">Soil Moisture</span>
+                  <span className="text-xs font-bold text-emerald-600">{soilMoisture}%</span>
+                </div>
+                <div className="h-2 rounded-full bg-muted overflow-hidden">
+                  <motion.div className="h-full rounded-full bg-emerald-500" initial={{ width: 0 }}
+                    animate={{ width: `${soilMoisture}%` }} transition={{ duration: 1, delay: 0.3 }} />
+                </div>
+              </div>
+              <span className="text-[10px] text-muted-foreground shrink-0">Field avg</span>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* ── Today's Suggested Tasks ────────────────────────────────────────── */}
+        <motion.div variants={item}>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-bold text-foreground">Today's Suggested Tasks</h2>
+            <span className="text-[11px] text-muted-foreground">{TASKS.filter(t => !t.done).length} pending</span>
+          </div>
+          <div className="space-y-2">
+            {TASKS.map((task, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4 + i * 0.06 }}
+                className={`flex items-start gap-3 rounded-2xl px-4 py-3 border transition-all ${
+                  task.done
+                    ? "bg-muted/30 border-border/30 opacity-60"
+                    : "bg-white/80 border-white/60 shadow-sm"
+                }`}
+              >
+                <div className={`w-8 h-8 rounded-xl shrink-0 flex items-center justify-center mt-0.5 ${task.done ? "bg-muted" : task.bg}`}>
+                  {task.done ? (
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                  ) : (
+                    <task.icon className={`h-4 w-4 ${task.color}`} />
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className={`text-sm font-semibold leading-snug ${task.done ? "line-through text-muted-foreground" : "text-foreground"}`}>
+                    {task.text}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug">{task.sub}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* ── Field Status ─────────────────────────────────────────────────── */}
+        <motion.div variants={item}>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-bold text-foreground">Field Status</h2>
+            <button onClick={() => navigate("/irrigation")} className="text-[11px] text-primary font-semibold hover:underline flex items-center gap-0.5">
+              All fields <ChevronRight className="h-3 w-3" />
+            </button>
+          </div>
+          <div className="space-y-2.5">
+            {FIELD_STATUS.map((f, i) => {
+              const sty = statusConfig[f.status];
+              return (
+                <motion.div
+                  key={f.field}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 + i * 0.07 }}
+                  className="flex items-center gap-3 bg-white/80 rounded-2xl px-4 py-3 border border-white/60 shadow-sm"
+                >
+                  <div className={`w-10 h-10 rounded-xl shrink-0 flex items-center justify-center ${f.status === "healthy" ? "bg-emerald-50 border border-emerald-200" : f.status === "at-risk" ? "bg-amber-50 border border-amber-200" : "bg-red-50 border border-red-200"}`}>
+                    <Leaf className={`h-5 w-5 ${f.status === "healthy" ? "text-emerald-500" : f.status === "at-risk" ? "text-amber-500" : "text-red-500"}`} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <p className="text-sm font-bold text-foreground">{f.field}</p>
+                      <span className="text-xs text-muted-foreground">{f.crop}</span>
+                      <span className={`ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full border ${f.status === "healthy" ? "bg-emerald-50 text-emerald-700 border-emerald-200" : f.status === "at-risk" ? "bg-amber-50 text-amber-700 border-amber-200" : "bg-red-50 text-red-700 border-red-200"}`}>
+                        {sty.label}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground leading-snug">{f.issue}</p>
+                    <p className="text-[10px] text-muted-foreground/70 mt-0.5">{f.action}</p>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </motion.div>
+
+        {/* ── Analytics Row ───────────────────────────────────────────────── */}
+        <motion.div variants={item}>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-bold text-foreground">Farm Analytics</h2>
+            <button onClick={() => navigate("/analytics")} className="text-[11px] text-primary font-semibold hover:underline flex items-center gap-0.5">
+              Full analytics <ChevronRight className="h-3 w-3" />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            {/* Crop Health */}
+            <div className="rounded-3xl p-4 shadow-sm border border-white/60"
+              style={{ background: "linear-gradient(135deg, hsl(142 35% 97%) 0%, hsl(170 40% 97%) 100%)" }}>
+              <div className="flex items-center gap-1.5 mb-3">
+                <TrendingUp className="h-4 w-4 text-emerald-600" />
+                <p className="text-xs font-bold text-foreground">Crop Health</p>
+              </div>
+              <div className="h-28">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie data={HEALTH_DONUT} cx="50%" cy="50%" innerRadius="50%" outerRadius="75%"
+                      paddingAngle={4} dataKey="value"
+                      onMouseEnter={(_, i) => setActiveIndex(i)}
+                      onMouseLeave={() => setActiveIndex(null)}>
+                      {HEALTH_DONUT.map((entry, i) => (
+                        <Cell key={i} fill={entry.color}
+                          opacity={activeIndex === null || activeIndex === i ? 1 : 0.45}
+                          stroke={activeIndex === i ? entry.color : "transparent"}
+                          strokeWidth={activeIndex === i ? 2 : 0} />
+                      ))}
+                    </Pie>
+                    <Tooltip contentStyle={{ borderRadius: 10, fontSize: 12, border: "1px solid #e5e7eb" }}
+                      formatter={(v: number, n: string) => [`${v}%`, n]} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="flex justify-center gap-2 mt-1">
+                {HEALTH_DONUT.slice(0, 2).map((h) => (
+                  <div key={h.name} className="flex items-center gap-1">
+                    <div className="w-1.5 h-1.5 rounded-full" style={{ background: h.color }} />
+                    <span className="text-[10px] text-muted-foreground">{h.name} {h.value}%</span>
                   </div>
                 ))}
               </div>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/60 rounded-xl px-3 py-2">
-                <Clock className="h-3.5 w-3.5 shrink-0" />
-                Renews on <span className="font-semibold text-foreground ml-1">May 3, 2026</span>
-              </div>
-            </CardContent>
-          </Card>
+            </div>
 
-          {/* AI Recommendations Alert */}
-          <Card className="rounded-2xl border-border/60 shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
-            <CardHeader className="pb-2 pt-5 px-5">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 text-primary" /> {t("dashboard.aiRecommendations")}
-                </CardTitle>
-                <Badge className="text-[10px] bg-primary/10 text-primary border-primary/20 font-medium">
-                  {RECOMMENDATIONS.length} new
-                </Badge>
+            {/* Weekly Activity */}
+            <div className="rounded-3xl p-4 shadow-sm border border-white/60"
+              style={{ background: "linear-gradient(135deg, hsl(200 35% 97%) 0%, hsl(230 30% 97%) 100%)" }}>
+              <div className="flex items-center gap-1.5 mb-3">
+                <Camera className="h-4 w-4 text-blue-500" />
+                <p className="text-xs font-bold text-foreground">Weekly Scans</p>
               </div>
-            </CardHeader>
-            <CardContent className="px-5 pb-5 space-y-2.5">
-              {RECOMMENDATIONS.map((rec, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.5 + i * 0.1 }}
-                  className="flex gap-2.5 bg-muted/50 rounded-xl p-3"
-                >
-                  <div className={`w-2 h-2 rounded-full shrink-0 mt-1.5 ${rec.dot}`} />
-                  <p className="text-xs text-foreground leading-relaxed">{rec.text}</p>
-                </motion.div>
-              ))}
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-full text-primary text-xs mt-1"
-                onClick={() => navigate("/recommendations")}
-              >
-                {t("dashboard.viewAll")} <ArrowRight className="h-3.5 w-3.5 ml-1" />
-              </Button>
-            </CardContent>
-          </Card>
+              <div className="h-28">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={WEEKLY_SCANS} barSize={8}>
+                    <XAxis dataKey="day" tick={{ fontSize: 9, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
+                    <Bar dataKey="scans" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+              <p className="text-[10px] text-muted-foreground text-center mt-1">28 scans this week</p>
+            </div>
+
+            {/* Water Usage */}
+            <div className="rounded-3xl p-4 shadow-sm border border-white/60 col-span-2"
+              style={{ background: "linear-gradient(135deg, hsl(210 35% 97%) 0%, hsl(190 30% 97%) 100%)" }}>
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-1.5">
+                  <Waves className="h-4 w-4 text-cyan-500" />
+                  <p className="text-xs font-bold text-foreground">Water Usage This Week</p>
+                </div>
+                <div className="flex items-center gap-1 text-[10px] text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                  <TrendingUp className="h-3 w-3" /> 18% saved
+                </div>
+              </div>
+              <div className="h-24">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={IRRIGATION_LOG}>
+                    <defs>
+                      <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#06b6d4" stopOpacity={0.3} />
+                        <stop offset="100%" stopColor="#06b6d4" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <XAxis dataKey="day" tick={{ fontSize: 9, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
+                    <Area type="monotone" dataKey="water" stroke="#06b6d4" strokeWidth={2}
+                      fill="url(#waterGrad)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="flex justify-between text-[10px] text-muted-foreground mt-1 px-1">
+                <span>Total: 1,440 L</span>
+                <span>Avg: 288 L/day</span>
+              </div>
+            </div>
+          </div>
         </motion.div>
 
-        {/* ── Visual Analytics Row ─────────────────────── */}
-        <motion.div variants={item} className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-
-          {/* Crop Health Donut Chart */}
-          <Card className="rounded-2xl border-border/60 shadow-sm hover:shadow-md transition-shadow duration-200">
-            <CardHeader className="pb-0 pt-5 px-5">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4 text-primary" /> {t("dashboard.fieldHealth")}
-                </CardTitle>
-                <span className="text-xs text-muted-foreground">Last 30 days</span>
-              </div>
-            </CardHeader>
-            <CardContent className="px-5 pb-5">
-              <div className="flex flex-col sm:flex-row items-center gap-6 mt-2">
-                <div className="w-full sm:w-48 h-48 shrink-0">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={HEALTH_DONUT.map((d) => ({ ...d, name: t(d.nameKey) }))}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius="60%"
-                        outerRadius="80%"
-                        paddingAngle={3}
-                        dataKey="value"
-                        onMouseEnter={(_, index) => setActiveIndex(index)}
-                        onMouseLeave={() => setActiveIndex(null)}
-                        labelLine={false}
-                      >
-                        {HEALTH_DONUT.map((entry, index) => (
-                          <Cell
-                            key={entry.nameKey}
-                            fill={entry.color}
-                            opacity={activeIndex === null || activeIndex === index ? 1 : 0.5}
-                            strokeWidth={activeIndex === index ? 2 : 0}
-                            stroke={entry.color}
-                          />
-                        ))}
-                      </Pie>
-                      <Tooltip
-                        formatter={(val: number, name: string) => [`${val}%`, name]}
-                        contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb", fontSize: 12 }}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="flex-1 space-y-2.5 w-full">
-                  {HEALTH_DONUT.map((entry, i) => (
-                    <motion.div
-                      key={entry.nameKey}
-                      initial={{ opacity: 0, x: 10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.4 + i * 0.08 }}
-                      className="flex items-center justify-between gap-2 group cursor-default"
-                      onMouseEnter={() => setActiveIndex(i)}
-                      onMouseLeave={() => setActiveIndex(null)}
-                    >
-                      <div className="flex items-center gap-2 min-w-0">
-                        <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: entry.color }} />
-                        <span className="text-sm text-muted-foreground truncate">{t(entry.nameKey)}</span>
-                      </div>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <div className="w-20 h-1.5 bg-muted rounded-full overflow-hidden">
-                          <motion.div
-                            className="h-full rounded-full"
-                            style={{ backgroundColor: entry.color }}
-                            initial={{ width: 0 }}
-                            animate={{ width: `${entry.value}%` }}
-                            transition={{ delay: 0.5 + i * 0.1, duration: 0.7, ease: "easeOut" }}
-                          />
-                        </div>
-                        <span className="text-sm font-bold text-foreground w-8 text-right">{entry.value}%</span>
-                      </div>
-                    </motion.div>
-                  ))}
-                  <div className="pt-2 mt-2 border-t border-border/60">
-                    <p className="text-xs text-muted-foreground">Based on <span className="font-semibold text-foreground">24 scans</span> across <span className="font-semibold text-foreground">3 fields</span></p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Weekly scan bar chart */}
-              <div className="mt-4 pt-4 border-t border-border/60">
-                <p className="text-xs font-medium text-muted-foreground mb-3">{t("dashboard.weeklyScans")}</p>
-                <div className="h-20">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={WEEKLY_SCANS} barSize={10}>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                      <XAxis dataKey="day" tick={{ fontSize: 10, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
-                      <YAxis hide />
-                      <Tooltip
-                        contentStyle={{ borderRadius: 10, border: "1px solid #e5e7eb", fontSize: 11 }}
-                        formatter={(v: number) => [v, "Scans"]}
-                      />
-                      <Bar dataKey="scans" fill="#22c55e" radius={[4, 4, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Weather Widget */}
-          <Card className="rounded-2xl border-border/60 shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
-            <CardHeader className="pb-0 pt-5 px-5">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
-                  <Sun className="h-4 w-4 text-amber-500" /> {t("weather.today")}
-                </CardTitle>
-                <span className="text-xs text-muted-foreground">{user?.state}</span>
-              </div>
-            </CardHeader>
-            <CardContent className="px-5 pb-5 space-y-4">
-              <div className="flex items-center justify-between mt-2">
-                <div className="flex items-center gap-4">
-                  <div className="relative">
-                    <Sun className="h-14 w-14 text-amber-400" />
-                    <CloudRain className="h-7 w-7 text-blue-400 absolute -bottom-1 -right-1" />
+        {/* ── AI Recommendations ────────────────────────────────────────────── */}
+        <motion.div variants={item}>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-bold text-foreground flex items-center gap-1.5">
+              <Sparkles className="h-4 w-4 text-primary" /> AI Insights
+            </h2>
+            <button onClick={() => navigate("/recommendations")} className="text-[11px] text-primary font-semibold hover:underline">
+              View all
+            </button>
+          </div>
+          <div
+            className="rounded-3xl p-4 shadow-sm border border-white/60"
+            style={{ background: "linear-gradient(135deg, hsl(45 60% 97%) 0%, hsl(30 55% 97%) 100%)" }}
+          >
+            <div className="space-y-3">
+              {[
+                { icon: AlertTriangle, color: "text-red-500", bg: "bg-red-50", border: "border-red-200", title: "Rain arriving in ~3 hours", desc: "Delay Field B irrigation to save 45L of water. Current soil moisture at 55% is sufficient." },
+                { icon: Droplets,      color: "text-blue-500", bg: "bg-blue-50", border: "border-blue-200", title: "Irrigate Field A before 11 AM", desc: "Soil moisture at 38% — below optimal threshold. Best window closes at 11 AM when UV peaks." },
+                { icon: Sprout,        color: "text-emerald-500", bg: "bg-emerald-50", border: "border-emerald-200", title: "Nitrogen deficiency — Field C", desc: "Cotton showing yellowing lower leaves. Apply urea 20 kg/acre after aphid treatment completes." },
+              ].map((insight, i) => (
+                <div key={i} className={`flex items-start gap-3 rounded-2xl p-3 border ${insight.bg} ${insight.border}`}>
+                  <div className={`w-8 h-8 rounded-xl shrink-0 flex items-center justify-center bg-white/80 mt-0.5`}>
+                    <insight.icon className={`h-4 w-4 ${insight.color}`} />
                   </div>
                   <div>
-                    <p className="text-4xl font-bold text-foreground">28°C</p>
-                    <p className="text-sm text-muted-foreground">Partly Cloudy</p>
+                    <p className="text-sm font-bold text-foreground">{insight.title}</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed mt-0.5">{insight.desc}</p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-xs text-muted-foreground">{t("weather.feelsLike")}</p>
-                  <p className="text-lg font-bold text-foreground">31°C</p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { icon: Droplets,    labelKey: "weather.humidity", value: "62%",     color: "text-blue-500" },
-                  { icon: Wind,        labelKey: "weather.wind",     value: "12 km/h", color: "text-slate-500" },
-                  { icon: Thermometer, labelKey: "weather.rain",     value: "7 High",  color: "text-orange-500" },
-                ].map(({ icon: Icon, labelKey, value, color }) => (
-                  <div key={labelKey} className="bg-muted/60 rounded-xl p-2.5 text-center">
-                    <Icon className={`h-4 w-4 mx-auto mb-1 ${color}`} />
-                    <p className="text-xs font-semibold text-foreground">{value}</p>
-                    <p className="text-[10px] text-muted-foreground">{t(labelKey)}</p>
-                  </div>
-                ))}
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-xs font-medium text-muted-foreground">{t("weather.hourlyRain")}</p>
-                  <div className="flex items-center gap-1 text-xs text-blue-600 font-medium">
-                    <CloudRain className="h-3 w-3" />
-                    11 mm expected
-                  </div>
-                </div>
-                <div className="h-20">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={HOURLY_RAIN} barSize={8}>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                      <XAxis dataKey="time" tick={{ fontSize: 10, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
-                      <YAxis hide />
-                      <Tooltip
-                        contentStyle={{ borderRadius: 10, border: "1px solid #e5e7eb", fontSize: 11 }}
-                        formatter={(v: number) => [`${v} mm`, t("weather.rain")]}
-                      />
-                      <Bar dataKey="mm" fill="#60a5fa" radius={[4, 4, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-xl p-3">
-                <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
-                <p className="text-xs text-amber-800 leading-relaxed">
-                  Rain expected in the afternoon. Avoid pesticide spraying after 12 PM today.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+              ))}
+            </div>
+          </div>
         </motion.div>
 
-        {/* ── Recent Scan History ──────────────────────── */}
+        {/* ── Recent Scan Summary ─────────────────────────────────────────── */}
         <motion.div variants={item}>
-          <Card className="rounded-2xl border-border/60 shadow-sm hover:shadow-md transition-shadow duration-200">
-            <CardHeader className="pt-5 px-5 pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
-                  <Bell className="h-4 w-4 text-primary" /> {t("dashboard.recentScans")}
-                </CardTitle>
-                <Button variant="ghost" size="sm" className="h-7 text-xs text-primary px-2" onClick={() => navigate("/history")}>
-                  {t("dashboard.viewAll")}
-                </Button>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-bold text-foreground">Recent Activity</h2>
+            <button onClick={() => navigate("/history")} className="text-[11px] text-primary font-semibold hover:underline flex items-center gap-0.5">
+              All activity <ChevronRight className="h-3 w-3" />
+            </button>
+          </div>
+          <div className="space-y-2">
+            {[
+              { crop: "Wheat", field: "Field A", action: "Yellow Rust detected", time: "10:24 AM", type: "scan", severity: "urgent" },
+              { crop: "Field A", field: "", action: "Irrigated — 320L used", time: "8:15 AM", type: "irrigation", severity: "info" },
+              { crop: "Rice", field: "Field B", action: "Minor leaf blight", time: "Yesterday", type: "scan", severity: "moderate" },
+              { crop: "Field C", field: "", action: "Skipped irrigation — rain expected", time: "Yesterday", type: "irrigation", severity: "info" },
+            ].map((act, i) => (
+              <div key={i} className="flex items-center gap-3 bg-white/80 rounded-2xl px-4 py-3 border border-white/60 shadow-sm">
+                <div className={`w-9 h-9 rounded-xl shrink-0 flex items-center justify-center ${
+                  act.type === "scan"
+                    ? act.severity === "urgent" ? "bg-red-50 border border-red-200" : act.severity === "moderate" ? "bg-amber-50 border border-amber-200" : "bg-emerald-50 border border-emerald-200"
+                    : "bg-blue-50 border border-blue-200"
+                }`}>
+                  {act.type === "scan" ? <Camera className={`h-4 w-4 ${
+                    act.severity === "urgent" ? "text-red-500" : act.severity === "moderate" ? "text-amber-500" : "text-emerald-500"
+                  }`} /> : <Droplets className="h-4 w-4 text-blue-500" />}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-foreground truncate">{act.action}</p>
+                  <p className="text-[11px] text-muted-foreground">{act.crop}{act.field ? ` · ${act.field}` : ""} · {act.time}</p>
+                </div>
+                {act.severity === "urgent" && (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-50 text-red-700 border border-red-200 shrink-0">Urgent</span>
+                )}
               </div>
-            </CardHeader>
-            <CardContent className="px-0 pb-0">
-              <div className="divide-y divide-border/50">
-                {SCAN_HISTORY.map((entry, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.4 + i * 0.07 }}
-                    className="flex items-center gap-4 px-5 py-3 hover:bg-muted/40 transition-colors cursor-pointer group"
-                  >
-                    <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                      <Leaf className="h-4 w-4 text-primary" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="text-sm font-semibold text-foreground">{entry.crop}</p>
-                        <span className="text-xs text-muted-foreground">· {entry.field}</span>
-                      </div>
-                      <p className="text-xs text-muted-foreground truncate">{entry.result}</p>
-                    </div>
-                    <div className="flex flex-col items-end gap-1 shrink-0">
-                      <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${severityBadge[entry.severity]} capitalize`}>
-                        {entry.severity}
-                      </span>
-                      <span className="text-[10px] text-muted-foreground">
-                        {entry.dateKey ? t(entry.dateKey) + entry.dateExtra : entry.dateExtra}
-                      </span>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+            ))}
+          </div>
         </motion.div>
+
+        {/* ── Floating Scan Button (mobile) ──────────────────────────────── */}
+        <motion.div variants={item} className="lg:hidden">
+          <motion.button
+            whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+            onClick={() => navigate("/scan")}
+            className="w-full h-14 rounded-2xl font-bold text-white text-sm flex items-center justify-center gap-2 shadow-lg"
+            style={{ background: "linear-gradient(135deg, hsl(142 62% 36%), hsl(196 70% 44%))" }}
+          >
+            <Camera className="h-5 w-5" /> Scan Crop Now
+          </motion.button>
+        </motion.div>
+
       </motion.div>
     </AppLayout>
   );

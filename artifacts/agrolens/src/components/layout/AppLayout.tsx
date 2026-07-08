@@ -2,6 +2,7 @@ import { useState, ReactNode } from "react";
 import { motion } from "framer-motion";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
+import BottomNav from "./BottomNav";
 import BhoomiButton from "./BhoomiButton";
 import { BhoomiProvider } from "@/lib/bhoomi-context";
 
@@ -13,7 +14,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
       <div className="min-h-screen bg-background">
         <Header onMenuToggle={() => setSidebarOpen((v) => !v)} sidebarOpen={sidebarOpen} />
         <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-        <main className="pt-16 lg:pl-64 min-h-screen">
+        <main className="pt-16 lg:pl-64 min-h-screen pb-20 lg:pb-0">
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -23,6 +24,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             {children}
           </motion.div>
         </main>
+        <BottomNav />
         <BhoomiButton />
       </div>
     </BhoomiProvider>

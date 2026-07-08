@@ -18,6 +18,7 @@ import PlaceholderPage from "@/pages/placeholder";
 import ProfilePage from "@/pages/profile";
 import IrrigationPage from "@/pages/irrigation";
 import RecommendationsPage from "@/pages/recommendations";
+import AnalyticsPage from "@/pages/analytics";
 import { MessageSquare, Lightbulb } from "lucide-react";
 
 const queryClient = new QueryClient();
@@ -72,6 +73,9 @@ function Router() {
             icon={MessageSquare}
           />
         )} />
+      </Route>
+      <Route path="/analytics">
+        <ProtectedRoute component={AnalyticsPage} />
       </Route>
       <Route path="/profile">
         <ProtectedRoute component={ProfilePage} />
