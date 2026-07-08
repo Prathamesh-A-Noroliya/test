@@ -84,24 +84,24 @@ export default function DashboardPage() {
 
         {/* ═════ Welcome Banner ═════ */}
         <motion.div variants={item}>
-          <div className="rounded-3xl p-5 relative overflow-hidden"
+          <div className="rounded-3xl p-5 md:p-8 relative overflow-hidden"
             style={{ background: "linear-gradient(135deg, hsl(142 55% 38%) 0%, hsl(170 50% 35%) 40%, hsl(200 60% 30%) 100%)" }}>
             <div className="relative z-10">
-              <div className="flex items-start justify-between">
+              <div className="flex items-start justify-between flex-wrap gap-4">
                 <div>
-                  <p className="text-white/70 text-xs font-medium">Thursday, 9 July</p>
-                  <h1 className="text-xl font-bold text-white mt-0.5 leading-tight">
+                  <p className="text-white/70 text-xs md:text-sm font-medium">Thursday, 9 July</p>
+                  <h1 className="text-xl md:text-2xl font-bold text-white mt-0.5 leading-tight">
                     Welcome back, {user?.fullName.split(" ")[0] || "Demo"}!
                   </h1>
-                  <p className="text-white/60 text-xs mt-1">
+                  <p className="text-white/60 text-xs md:text-sm mt-1">
                     Your farm is being monitored. Here&apos;s today&apos;s overview.
                   </p>
                 </div>
-                <div className="hidden sm:block text-right">
-                  <p className="text-white/70 text-[10px]">Farmer ID</p>
-                  <p className="text-white text-xs font-bold">AGR24-DEMO1</p>
-                  <p className="text-white/70 text-[10px] mt-1">Crop</p>
-                  <p className="text-white text-xs font-bold">Rice</p>
+                <div className="text-right hidden sm:block">
+                  <p className="text-white/70 text-[10px] md:text-xs">Farmer ID</p>
+                  <p className="text-white text-xs md:text-sm font-bold">AGR24-DEMO1</p>
+                  <p className="text-white/70 text-[10px] md:text-xs mt-1">Crop</p>
+                  <p className="text-white text-xs md:text-sm font-bold">Rice</p>
                 </div>
               </div>
               <div className="flex items-center gap-2 mt-4 flex-wrap">
@@ -116,7 +116,6 @@ export default function DashboardPage() {
                 </span>
               </div>
             </div>
-            {/* Decorative circles */}
             <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-white/5" />
             <div className="absolute -bottom-12 -left-12 w-40 h-40 rounded-full bg-white/5" />
           </div>
@@ -127,23 +126,23 @@ export default function DashboardPage() {
           <motion.button
             whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
             onClick={() => navigate("/scan")}
-            className="flex-1 relative overflow-hidden rounded-2xl p-4 text-left shadow-sm"
+            className="flex-1 relative overflow-hidden rounded-2xl p-4 md:p-6 text-left shadow-sm"
             style={{ background: "linear-gradient(135deg, hsl(142 62% 36%), hsl(196 70% 44%))" }}
           >
             <Camera className="h-6 w-6 text-white/90 mb-3" />
-            <p className="text-white font-bold text-sm leading-tight">Scan Crop</p>
-            <p className="text-white/70 text-[11px] mt-0.5">Upload photos for AI diagnosis</p>
+            <p className="text-white font-bold text-sm md:text-base leading-tight">Scan Crop</p>
+            <p className="text-white/70 text-[11px] md:text-xs mt-0.5">Upload photos for AI diagnosis</p>
             <Camera className="absolute top-3 right-3 h-8 w-8 text-white opacity-10" />
           </motion.button>
           <motion.button
             whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
             onClick={() => navigate("/history")}
-            className="flex-1 relative overflow-hidden rounded-2xl p-4 text-left shadow-sm"
+            className="flex-1 relative overflow-hidden rounded-2xl p-4 md:p-6 text-left shadow-sm"
             style={{ background: "linear-gradient(135deg, hsl(280 55% 52%), hsl(260 50% 48%))" }}
           >
             <History className="h-6 w-6 text-white/90 mb-3" />
-            <p className="text-white font-bold text-sm leading-tight">View History</p>
-            <p className="text-white/70 text-[11px] mt-0.5">Past scans &amp; results</p>
+            <p className="text-white font-bold text-sm md:text-base leading-tight">View History</p>
+            <p className="text-white/70 text-[11px] md:text-xs mt-0.5">Past scans &amp; results</p>
             <History className="absolute top-3 right-3 h-8 w-8 text-white opacity-10" />
           </motion.button>
         </motion.div>
@@ -404,7 +403,7 @@ export default function DashboardPage() {
               All fields <ChevronRight className="h-3 w-3" />
             </button>
           </div>
-          <div className="space-y-2.5">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
             {FIELD_STATUS.map((f, i) => {
               const sty = statusConfig[f.status];
               return (

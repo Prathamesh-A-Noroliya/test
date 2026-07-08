@@ -130,7 +130,7 @@ export default function PremiumRecommendationPage() {
 
   return (
     <AppLayout>
-      <motion.div variants={container} initial="hidden" animate="show" className="max-w-3xl mx-auto space-y-6">
+      <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
 
         {/* Header */}
         <motion.div variants={item}>

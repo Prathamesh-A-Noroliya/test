@@ -5,7 +5,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/lib/auth";
 import { ScanProvider } from "@/lib/scan-store";
 import { LanguageProvider } from "@/lib/language-context";
-import { ThemeProvider } from "@/lib/theme-context";
 import LoginPage from "@/pages/login";
 import RegisterPage from "@/pages/register";
 import DashboardPage from "@/pages/dashboard";
@@ -93,16 +92,14 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <LanguageProvider>
-          <ThemeProvider>
-            <AuthProvider>
-              <ScanProvider>
-                <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-                  <Router />
-                </WouterRouter>
-                <Toaster />
-              </ScanProvider>
-            </AuthProvider>
-          </ThemeProvider>
+          <AuthProvider>
+            <ScanProvider>
+              <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+                <Router />
+              </WouterRouter>
+              <Toaster />
+            </ScanProvider>
+          </AuthProvider>
         </LanguageProvider>
       </TooltipProvider>
     </QueryClientProvider>

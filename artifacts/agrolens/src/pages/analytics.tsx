@@ -58,7 +58,7 @@ export default function AnalyticsPage() {
 
   return (
     <AppLayout>
-      <motion.div variants={container} initial="hidden" animate="show" className="max-w-lg mx-auto space-y-5 pb-6">
+      <motion.div variants={container} initial="hidden" animate="show" className="space-y-5 pb-6">
 
         {/* Header */}
         <motion.div variants={item}>

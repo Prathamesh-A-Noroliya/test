@@ -100,7 +100,7 @@ export default function HistoryPage() {
   return (
     <AppLayout>
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}
-        className="max-w-lg mx-auto space-y-5 pb-6">
+        className="space-y-5 pb-6">
 
         {/* Header */}
         <div>

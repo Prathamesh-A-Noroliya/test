@@ -209,7 +209,7 @@ export default function RecommendationsPage() {
 
   return (
     <AppLayout>
-      <div className="max-w-3xl mx-auto space-y-5">
+      <div className="space-y-5">
 
         {/* Header */}
         <div className="flex items-start justify-between gap-4 flex-wrap">

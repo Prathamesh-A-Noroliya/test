@@ -176,7 +176,7 @@ export default function CheckoutPage() {
 
   return (
     <AppLayout>
-      <div className="max-w-lg mx-auto space-y-5">
+      <div className="space-y-5">
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
           <button onClick={() => navigate("/subscription")} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-3">

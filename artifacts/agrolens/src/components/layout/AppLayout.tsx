@@ -19,7 +19,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto"
+            className="p-4 md:p-6 lg:p-8 w-full"
           >
             {children}
           </motion.div>

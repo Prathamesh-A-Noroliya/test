@@ -1,0 +1,430 @@
+You are the lead Senior Frontend Engineer and UI/UX Designer for the AgroLens platform.
+
+Your task is to improve the existing application without breaking any current functionality. Maintain the existing architecture, APIs, authentication, database, and business logic. Only modify the frontend where specified.
+
+The final result should feel like a production-grade SaaS platform that is responsive, modern, and investor/demo ready.
+
+Objective
+
+Transform AgroLens into a professional desktop-first responsive application while preserving full mobile compatibility.
+
+1. Remove Theme Toggle Completely
+
+The application currently contains a Light/Dark mode toggle.
+
+Requirements
+Remove the toggle button from every page.
+Remove every component related to theme switching.
+Remove unused state management for theme switching.
+Remove unnecessary hooks and providers if they are only used for theme toggling.
+Remove all icons related to the toggle.
+
+The application should use one consistent professional theme across the entire platform.
+
+Preferred theme:
+
+Clean white backgrounds
+Green agricultural accents
+Soft shadows
+Light gray sections
+Modern card layout
+Premium SaaS appearance
+2. Restore Dashboard From Previous Stable Checkpoint
+
+The current dashboard design should be discarded.
+
+Restore the dashboard layout from the previous stable checkpoint while keeping all newly added backend functionality.
+
+Requirements:
+
+Previous dashboard layout
+Previous spacing
+Previous widget arrangement
+Previous navigation
+Previous hero section
+Previous card structure
+
+Do NOT remove any newly implemented features.
+
+Instead:
+
+Keep all new APIs and data.
+
+Only restore the previous UI layout.
+
+If conflicts occur:
+
+Keep newer functionality inside the previous dashboard design.
+
+3. Improve Smart Irrigation Page
+
+Current Smart Irrigation page hierarchy is poor.
+
+Rearrange the components.
+
+Current order:
+
+Prediction
+Weather
+Recommendations
+etc.
+
+New order:
+
+• Irrigation Recommendation Card
+• AI Water Requirement
+• Soil Moisture
+• Crop Information
+• Water Usage Analytics
+• AI Suggestions
+• Irrigation History
+• Live Weather (LAST)
+
+The Live Weather widget should NOT dominate the page.
+
+Requirements:
+
+Move Live Weather to the very bottom.
+Reduce its width.
+Reduce its height.
+Display it as a compact secondary widget.
+Remove unnecessary weather graphics.
+Make it appear like a small informational card.
+
+Weather should support the recommendation rather than become the focus.
+
+4. Desktop Responsive Redesign
+
+The website currently behaves like a stretched mobile application.
+
+This must be completely redesigned.
+
+Current issue:
+
+Desktop screens still use narrow mobile containers.
+
+This wastes a huge amount of screen space.
+
+Requirements:
+
+Desktop (1440px+)
+
+Use approximately:
+
+85–92% viewport width
+
+Large spacing
+
+Large cards
+
+Multiple columns
+
+Professional SaaS dashboard layout
+
+Example layout:
+
+Sidebar
+
+Large Main Content
+
+Analytics Cards
+
+Charts
+
+AI Insights Panel
+
+Desktop should feel like:
+
+Notion
+
+Vercel Dashboard
+
+GitHub Dashboard
+
+Stripe Dashboard
+
+Linear
+
+Avoid centered mobile layouts.
+
+5. Responsive Breakpoints
+
+Implement proper breakpoints.
+
+Mobile
+
+<768px
+
+Single column
+
+Tablet
+
+768–1024px
+
+Two-column adaptive layout
+
+Laptop
+
+1024–1440px
+
+Comfortable spacing
+
+Desktop
+
+1440px+
+
+Wide dashboard
+
+Maximum content utilization
+
+Ultra Wide
+
+1920px+
+
+Expand grids intelligently
+
+No huge empty margins
+
+6. Improve Overall Layout
+
+Across every page:
+
+Increase whitespace
+
+Increase breathing room
+
+Improve margins
+
+Improve paddings
+
+Increase card spacing
+
+Better typography hierarchy
+
+Larger section titles
+
+Consistent vertical rhythm
+
+Every page should feel premium.
+
+7. Improve Dashboard Grid
+
+Instead of stacked cards:
+
+Desktop should use:
+
+2-column
+
+3-column
+
+4-column
+
+responsive grids.
+
+Analytics should align naturally.
+
+No awkward empty spaces.
+
+Cards should automatically resize.
+
+8. Better Navigation
+
+Improve the sidebar.
+
+Requirements:
+
+Better spacing
+
+Modern icons
+
+Consistent alignment
+
+Smooth hover animation
+
+Active indicator
+
+Rounded navigation buttons
+
+Proper desktop width
+
+Collapsible only if already supported.
+
+9. Better Cards
+
+Every card should have:
+
+Rounded corners
+
+Soft shadows
+
+Hover elevation
+
+Subtle border
+
+Consistent padding
+
+Better spacing
+
+Professional typography
+
+Smooth transitions
+
+10. Improve Charts
+
+Increase chart width.
+
+Increase chart height.
+
+Prevent cramped visualizations.
+
+Charts should automatically resize on desktop.
+
+11. Better Page Width
+
+Currently pages use something similar to:
+
+max-width: 1200px
+
+Remove restrictive containers.
+
+Suggested layout:
+
+Main content should occupy around 90vw.
+
+Only limit widths where readability matters (forms, text-heavy content).
+
+Dashboard pages should expand naturally.
+
+12. Better Tables
+
+Tables should:
+
+Use full width
+
+Sticky headers
+
+Better spacing
+
+Larger row height
+
+Hover effects
+
+Responsive overflow
+
+Professional appearance
+
+13. Animation Improvements
+
+Add subtle animations only.
+
+Use:
+
+Fade-in
+
+Slide-up
+
+Card hover
+
+Button hover
+
+Smooth transitions
+
+No excessive motion.
+
+14. Maintain Existing Features
+
+Do NOT remove:
+
+Authentication
+
+AI Prediction
+
+Crop Recommendation
+
+Disease Detection
+
+Marketplace
+
+Government Schemes
+
+Farmer Dashboard
+
+Analytics
+
+Database functionality
+
+API integration
+
+Backend logic
+
+Existing routes
+
+Only improve UI and layout.
+
+15. Code Quality
+
+While implementing:
+
+Remove unused components.
+
+Remove dead CSS.
+
+Remove duplicate Tailwind classes.
+
+Keep reusable components.
+
+Follow clean React architecture.
+
+Avoid inline styling.
+
+Use responsive utility classes.
+
+Ensure accessibility.
+
+16. Final Quality Checklist
+
+Before finishing, verify:
+
+✓ Theme toggle completely removed
+
+✓ Previous dashboard UI restored
+
+✓ New functionality preserved
+
+✓ Smart Irrigation reordered
+
+✓ Live Weather moved to bottom
+
+✓ Weather widget reduced in size
+
+✓ Desktop layout fully utilizes screen width
+
+✓ Proper responsive breakpoints implemented
+
+✓ Sidebar improved
+
+✓ Cards redesigned
+
+✓ Charts expanded
+
+✓ Dashboard grids responsive
+
+✓ No mobile-looking desktop layout
+
+✓ No overflow issues
+
+✓ Mobile experience remains fully functional
+
+✓ Tablet layout optimized
+
+✓ Laptop layout optimized
+
+✓ Ultra-wide screens supported
+
+✓ Consistent spacing across the application
+
+✓ Production-ready code
+
+Final Goal
+
+The final AgroLens interface should resemble a premium enterprise SaaS product rather than a mobile app stretched onto a desktop screen. It should make full use of available screen space, present information with a clear visual hierarchy, and provide a polished experience across mobile, tablet, laptop, and large desktop displays. Preserve all existing functionality while significantly elevating the design quality, responsiveness, and usability.

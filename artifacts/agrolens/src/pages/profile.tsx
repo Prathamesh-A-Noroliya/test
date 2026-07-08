@@ -96,7 +96,7 @@ export default function ProfilePage() {
 
   return (
     <AppLayout>
-      <motion.div variants={container} initial="hidden" animate="show" className="max-w-2xl mx-auto space-y-5">
+      <motion.div variants={container} initial="hidden" animate="show" className="space-y-5">
 
         {/* Page title */}
         <motion.div variants={item} className="flex items-center justify-between">

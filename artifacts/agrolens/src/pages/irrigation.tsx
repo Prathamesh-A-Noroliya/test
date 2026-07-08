@@ -5,13 +5,13 @@ import {
   Droplets, Thermometer, Wind, CloudRain, Sun, Cloud,
   Lock, Star, Zap, TrendingDown, TrendingUp, Clock,
   Leaf, AlertTriangle, CheckCircle2, CalendarClock,
-  BarChart3, Gauge, RefreshCw, MapPin,
+  BarChart3, Gauge, RefreshCw, MapPin, Sprout,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AppLayout from "@/components/layout/AppLayout";
 import { useAuth } from "@/lib/auth";
 
-/* ──── Types ───────────────────────────────────────────── */
+/* ──── Types ────────────────────────────────────────────────────────────────────────── */
 interface WeatherNow {
   temperature: number;
   humidity: number;
@@ -27,7 +27,7 @@ interface DayForecast {
   rainChance: number;
 }
 
-/* ──── Open-Meteo free API (no API key needed) ─────────── */
+/* ──── Open-Meteo free API (no API key needed) ──────────────────────────── */
 const WEATHER_API =
   "https://api.open-meteo.com/v1/forecast" +
   "?latitude=18.52&longitude=73.85" +
@@ -35,7 +35,7 @@ const WEATHER_API =
   "&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max" +
   "&forecast_days=4&timezone=Asia/Kolkata";
 
-/* ──── Mock fallback data ──────────────────────────────── */
+/* ──── Mock fallback data ──────────────────────────────────────────────────────────── */
 const MOCK_NOW: WeatherNow = { temperature: 28, humidity: 65, precipitation: 0.2, windSpeed: 11, weatherCode: 1 };
 const MOCK_FORECAST: DayForecast[] = [
   { date: "Today",     maxTemp: 32, minTemp: 22, rain: 0.2,  rainChance: 15 },
@@ -43,7 +43,7 @@ const MOCK_FORECAST: DayForecast[] = [
   { date: "Day 3",     maxTemp: 27, minTemp: 20, rain: 12.4, rainChance: 85 },
 ];
 
-/* ──── Mock soil / irrigation data ────────────────────── */
+/* ──── Mock soil / irrigation data ─────────────────────────────────────────────────────────── */
 const SOIL = { moisture: 38, fieldCapacity: 70, wiltingPoint: 20 };
 const WATER_USAGE = { today: 320, yesterday: 450, weekly: 2100, saved: 18 };
 const SCHEDULE = { next: "Tomorrow 5:30 AM", method: "Drip Irrigation", duration: "45 min", zone: "Field A & B" };
@@ -53,7 +53,7 @@ const RECS = [
   { icon: Leaf,         color: "green",  title: "Fertilizer timing",      desc: "Apply NPK after irrigation tomorrow. Moist soil improves nutrient absorption." },
 ];
 
-/* ──── Weather helpers ─────────────────────────────────── */
+/* ──── Weather helpers ────────────────────────────────────────────────────────────────────────── */
 function weatherInfo(code: number) {
   if (code === 0)        return { icon: Sun,       label: "Clear Sky",   insight: "Perfect day for all field operations & spraying" };
   if (code <= 3)         return { icon: Cloud,      label: "Partly Cloudy", insight: "Good conditions for transplanting & fieldwork" };
@@ -75,7 +75,7 @@ function dayLabel(dateStr: string, idx: number) {
   return d.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" });
 }
 
-/* ──── Premium Gate ────────────────────────────────────── */
+/* ──── Premium Gate ────────────────────────────────────────────────────────────────────────────── */
 function PremiumGate({ children, label }: { children: React.ReactNode; label: string }) {
   const { user } = useAuth();
   const [, navigate] = useLocation();
@@ -116,7 +116,7 @@ function PremiumGate({ children, label }: { children: React.ReactNode; label: st
   );
 }
 
-/* ──── Main Page ───────────────────────────────────────── */
+/* ──── Main Page ────────────────────────────────────────────────────────────────────────────── */
 export default function IrrigationPage() {
   const { user } = useAuth();
   const [weatherNow, setWeatherNow] = useState<WeatherNow | null>(null);
@@ -165,7 +165,7 @@ export default function IrrigationPage() {
   const soil = soilStatus(SOIL.moisture);
   const SoilIcon = soil.icon;
 
-  /* ── Circular moisture gauge ── */
+  /* ─── Circular moisture gauge ─── */
   const gaugeR = 44;
   const gaugeCirc = 2 * Math.PI * gaugeR;
   const moisPct = SOIL.moisture / 100;
@@ -175,7 +175,7 @@ export default function IrrigationPage() {
     <AppLayout>
       <div className="space-y-6">
 
-        {/* ── Page Header ────────────────────────────────── */}
+        {/* ──── Page Header ────────────────────────────────────────────────────────────────────────────── */}
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
             <div className="flex items-center gap-2 mb-1">
@@ -200,89 +200,74 @@ export default function IrrigationPage() {
           )}
         </div>
 
-        {/* ── Weather Section (free to view) ─────────────── */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Live Weather</h2>
-            <button
-              onClick={fetchWeather}
-              className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
-            >
-              <RefreshCw className={`h-3.5 w-3.5 ${weatherLoading ? "animate-spin" : ""}`} />
-              {lastUpdated ? `Updated ${lastUpdated}` : "Refresh"}
-            </button>
+        {/* ═════ 1. Recommendation Card (free) ═════ */}
+        <div className="rounded-2xl p-5 border border-white/60 shadow-sm"
+          style={{ background: "linear-gradient(135deg, hsl(142 40% 96%) 0%, hsl(196 50% 95%) 100%)" }}>
+          <div className="flex items-center gap-2 mb-3">
+            <Zap className="h-5 w-5 text-amber-500" />
+            <h2 className="text-base font-bold text-foreground">Irrigation Recommendations</h2>
           </div>
-
-          {/* Current weather card */}
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="rounded-2xl border border-white/60 shadow-sm overflow-hidden"
-            style={{ background: "linear-gradient(135deg, hsl(142 40% 96%) 0%, hsl(196 50% 95%) 100%)" }}
-          >
-            <div className="p-5">
-              <div className="flex items-start justify-between gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {RECS.map((rec, i) => (
+              <div key={i} className="bg-white/80 rounded-xl border border-white/60 p-4 flex items-start gap-3">
+                <div className={`w-10 h-10 rounded-xl shrink-0 flex items-center justify-center ${
+                  rec.color === "blue" ? "bg-blue-100" : rec.color === "sky" ? "bg-sky-100" : "bg-emerald-100"
+                }`}>
+                  <rec.icon className={`h-5 w-5 ${
+                    rec.color === "blue" ? "text-blue-600" : rec.color === "sky" ? "text-sky-600" : "text-emerald-600"
+                  }`} />
+                </div>
                 <div>
-                  <div className="flex items-baseline gap-2 mb-1">
-                    <span className="text-5xl font-bold text-foreground">{now.temperature}°</span>
-                    <span className="text-2xl text-muted-foreground">C</span>
-                  </div>
-                  <p className="text-base font-semibold text-foreground">{wInfo.label}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">Pune, Maharashtra</p>
-                </div>
-                <div
-                  className="w-20 h-20 rounded-2xl flex items-center justify-center shadow-sm"
-                  style={{ background: "linear-gradient(135deg, hsl(142 62% 36%), hsl(196 70% 44%))" }}
-                >
-                  <WeatherIcon className="h-10 w-10 text-white" />
+                  <p className="text-sm font-bold text-foreground">{rec.title}</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed mt-0.5">{rec.desc}</p>
                 </div>
               </div>
-
-              {/* Stats row */}
-              <div className="grid grid-cols-3 gap-3 mt-4">
-                {[
-                  { icon: Droplets,    value: `${now.humidity}%`,       label: "Humidity" },
-                  { icon: Wind,        value: `${now.windSpeed} km/h`,   label: "Wind" },
-                  { icon: CloudRain,   value: `${now.precipitation} mm`, label: "Rain Today" },
-                ].map((s) => (
-                  <div key={s.label} className="bg-white/70 rounded-xl px-3 py-2.5 text-center border border-white/60">
-                    <s.icon className="h-4 w-4 text-primary mx-auto mb-1" />
-                    <p className="text-sm font-bold text-foreground">{s.value}</p>
-                    <p className="text-[10px] text-muted-foreground">{s.label}</p>
-                  </div>
-                ))}
-              </div>
-
-              {/* Farming insight */}
-              <div className="mt-4 flex items-center gap-2.5 px-4 py-3 rounded-xl bg-white/70 border border-white/60">
-                <Zap className="h-4 w-4 text-amber-500 shrink-0" />
-                <p className="text-sm font-medium text-foreground">{wInfo.insight}</p>
-              </div>
-            </div>
-
-            {/* 4-day forecast strip */}
-            <div
-              className="px-5 py-3 border-t border-white/50"
-              style={{ background: "linear-gradient(90deg, hsl(142 35% 95%) 0%, hsl(196 45% 94%) 100%)" }}
-            >
-              <div className="grid grid-cols-4 gap-2">
-                {fc.map((day, i) => (
-                  <div key={i} className="text-center">
-                    <p className="text-[11px] font-semibold text-muted-foreground mb-1">{dayLabel(day.date, i)}</p>
-                    <CloudRain className={`h-4 w-4 mx-auto mb-1 ${day.rainChance > 50 ? "text-sky-500" : "text-muted-foreground/40"}`} />
-                    <p className="text-xs font-bold text-foreground">{day.maxTemp}°</p>
-                    <p className="text-[10px] text-muted-foreground">{day.minTemp}°</p>
-                    <p className={`text-[10px] font-medium mt-0.5 ${day.rainChance > 50 ? "text-sky-600" : "text-muted-foreground/60"}`}>
-                      {day.rainChance}%
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
+            ))}
+          </div>
         </div>
 
-        {/* ── Soil Moisture (premium gated) ──────────────── */}
+        {/* ═════ 2. AI Water Requirement (premium gated) ═════ */}
+        <PremiumGate label="AI Water Requirement">
+          <div className="rounded-2xl p-5 border border-white/60 shadow-sm"
+            style={{ background: "linear-gradient(135deg, hsl(200 40% 96%) 0%, hsl(220 50% 95%) 100%)" }}>
+            <div className="flex items-center gap-2 mb-4">
+              <Sprout className="h-5 w-5 text-primary" />
+              <h2 className="text-base font-bold text-foreground">AI Water Requirement</h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[
+                { field: "Field A — Wheat", need: "High", mm: 25, soil: 38, reason: "Below optimal moisture" },
+                { field: "Field B — Rice",  need: "Low",  mm: 0,  soil: 55, reason: "Sufficient moisture + rain expected" },
+                { field: "Field C — Cotton", need: "Med",  mm: 12, soil: 42, reason: "Approaching threshold" },
+                { field: "Field D — Tomato", need: "Low",  mm: 0,  soil: 68, reason: "Optimal moisture levels" },
+              ].map((row) => (
+                <div key={row.field} className="bg-white/80 rounded-xl border border-white/60 p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm font-bold text-foreground">{row.field}</p>
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                      row.need === "High" ? "bg-red-50 text-red-700 border-red-200" :
+                      row.need === "Med"  ? "bg-amber-50 text-amber-700 border-amber-200" :
+                      "bg-emerald-50 text-emerald-700 border-emerald-200"
+                    }`}>{row.need} Need</span>
+                  </div>
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="flex items-center gap-1.5 flex-1">
+                      <Gauge className="h-3 w-3 text-muted-foreground" />
+                      <span className="text-[10px] text-muted-foreground">Soil {row.soil}%</span>
+                      <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
+                        <div className="h-full rounded-full bg-primary" style={{ width: `${row.soil}%` }} />
+                      </div>
+                    </div>
+                    <span className="text-xs font-bold text-foreground">{row.mm} mm</span>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground">{row.reason}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </PremiumGate>
+
+        {/* ═════ 3. Soil Moisture (premium gated) ═════ */}
         <PremiumGate label="Soil Moisture Analysis">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
@@ -299,7 +284,6 @@ export default function IrrigationPage() {
             </div>
 
             <div className="flex items-center gap-6">
-              {/* SVG gauge */}
               <div className="relative shrink-0">
                 <svg width="110" height="110" viewBox="0 0 110 110">
                   <circle cx="55" cy="55" r={gaugeR} fill="none" stroke="hsl(190 28% 90%)" strokeWidth="10" />
@@ -353,7 +337,30 @@ export default function IrrigationPage() {
           </motion.div>
         </PremiumGate>
 
-        {/* ── Water Usage (premium gated) ────────────────── */}
+        {/* ═════ 4. Crop Info ═════ */}
+        <div className="rounded-2xl p-5 border border-white/60 shadow-sm"
+          style={{ background: "linear-gradient(135deg, hsl(45 50% 97%) 0%, hsl(35 45% 97%) 100%)" }}>
+          <div className="flex items-center gap-2 mb-3">
+            <Leaf className="h-5 w-5 text-emerald-600" />
+            <h2 className="text-base font-bold text-foreground">Crop Information</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+            {[
+              { crop: "Wheat",  stage: "Tillering", planted: "Oct 2025", days: 120 },
+              { crop: "Rice",   stage: "Flowering", planted: "Jul 2025", days: 210 },
+              { crop: "Cotton", stage: "Boll",      planted: "Jun 2025", days: 180 },
+              { crop: "Tomato", stage: "Fruiting",  planted: "Sep 2025", days: 90 },
+            ].map((c) => (
+              <div key={c.crop} className="bg-white/80 rounded-xl border border-white/60 p-3">
+                <p className="text-sm font-bold text-foreground">{c.crop}</p>
+                <p className="text-[11px] text-muted-foreground">{c.stage} · Day {c.days}</p>
+                <p className="text-[10px] text-muted-foreground mt-1">Planted {c.planted}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ═════ 5. Water Usage Analytics (premium gated) ═════ */}
         <PremiumGate label="Water Usage Analytics">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
@@ -414,96 +421,157 @@ export default function IrrigationPage() {
           </motion.div>
         </PremiumGate>
 
-        {/* ── Irrigation Schedule (premium gated) ────────── */}
-        <PremiumGate label="Irrigation Schedule">
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="bg-white/80 rounded-2xl border border-white/60 shadow-sm p-5"
-          >
-            <div className="flex items-center gap-2 mb-4">
-              <CalendarClock className="h-5 w-5 text-primary" />
-              <h2 className="text-base font-bold text-foreground">Irrigation Schedule</h2>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              {[
-                { label: "Next Irrigation", value: SCHEDULE.next,     icon: Clock,          color: "text-primary" },
-                { label: "Method",          value: SCHEDULE.method,   icon: Droplets,        color: "text-sky-600" },
-                { label: "Duration",        value: SCHEDULE.duration,  icon: TrendingUp,     color: "text-amber-600" },
-                { label: "Zones",           value: SCHEDULE.zone,      icon: MapPin,         color: "text-emerald-600" },
-              ].map((s) => (
-                <div key={s.label} className="bg-muted/30 rounded-xl p-3 border border-border/40">
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <s.icon className={`h-3.5 w-3.5 ${s.color}`} />
-                    <span className="text-[10px] text-muted-foreground uppercase tracking-wide font-semibold">{s.label}</span>
+        {/* ═════ 6. AI Suggestions (premium gated) ═════ */}
+        <PremiumGate label="AI Irrigation Suggestions">
+          <div className="space-y-3">
+            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Smart Recommendations</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {RECS.map((rec, i) => (
+                <div key={i}
+                  className="bg-white/80 rounded-2xl border border-white/60 shadow-sm p-4 flex items-start gap-3.5"
+                >
+                  <div className={`w-9 h-9 rounded-xl shrink-0 flex items-center justify-center ${
+                    rec.color === "blue"  ? "bg-blue-100"
+                    : rec.color === "sky"   ? "bg-sky-100"
+                    : "bg-emerald-100"
+                  }`}>
+                    <rec.icon className={`h-4.5 w-4.5 ${
+                      rec.color === "blue"  ? "text-blue-600"
+                      : rec.color === "sky"   ? "text-sky-600"
+                      : "text-emerald-600"
+                    }`} />
                   </div>
-                  <p className="text-sm font-bold text-foreground">{s.value}</p>
+                  <div>
+                    <p className="text-sm font-bold text-foreground mb-0.5">{rec.title}</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed">{rec.desc}</p>
+                  </div>
                 </div>
               ))}
             </div>
-
-            {/* Weather-based suggestion */}
-            <div
-              className="rounded-xl p-4 border"
-              style={{
-                background: "linear-gradient(135deg, hsl(142 40% 96%) 0%, hsl(196 50% 95%) 100%)",
-                borderColor: "hsl(170 30% 85%)",
-              }}
-            >
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Weather-Based Adjustment</p>
-              {fc[1]?.rainChance > 50 ? (
-                <div className="flex items-start gap-2.5">
-                  <CloudRain className="h-4 w-4 text-sky-500 shrink-0 mt-0.5" />
-                  <p className="text-sm text-foreground">
-                    <strong>Skip tomorrow's irrigation.</strong> Rain forecast at {fc[1]?.rainChance}% probability ({fc[1]?.rain}mm expected). This will save ~{SCHEDULE.duration} of water.
-                  </p>
-                </div>
-              ) : (
-                <div className="flex items-start gap-2.5">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
-                  <p className="text-sm text-foreground">
-                    <strong>Proceed as scheduled.</strong> No significant rainfall expected tomorrow. Irrigation will help maintain optimal soil moisture.
-                  </p>
-                </div>
-              )}
-            </div>
-          </motion.div>
+          </div>
         </PremiumGate>
 
-        {/* ── Smart Recommendations (premium gated) ──────── */}
-        <PremiumGate label="AI Irrigation Recommendations">
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25 }}
-            className="space-y-3"
-          >
-            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Smart Recommendations</h2>
-            {RECS.map((rec, i) => (
-              <div key={i}
-                className="bg-white/80 rounded-2xl border border-white/60 shadow-sm p-4 flex items-start gap-3.5"
-              >
-                <div className={`w-9 h-9 rounded-xl shrink-0 flex items-center justify-center ${
-                  rec.color === "blue"  ? "bg-blue-100"
-                  : rec.color === "sky"   ? "bg-sky-100"
-                  : "bg-emerald-100"
-                }`}>
-                  <rec.icon className={`h-4.5 w-4.5 ${
-                    rec.color === "blue"  ? "text-blue-600"
-                    : rec.color === "sky"   ? "text-sky-600"
-                    : "text-emerald-600"
-                  }`} />
+        {/* ═════ 7. Irrigation History ═════ */}
+        <div className="space-y-3">
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Irrigation History</h2>
+          <div className="bg-white/80 rounded-2xl border border-white/60 shadow-sm p-5">
+            <div className="space-y-3">
+              {[
+                { date: "Today, 8:15 AM",   field: "Field A", water: 320, method: "Drip", status: "completed" },
+                { date: "Yesterday, 6:30 AM", field: "Field B", water: 450, method: "Sprinkler", status: "completed" },
+                { date: "Apr 1, 2026",       field: "Field C", water: 0,   method: "None", status: "skipped" },
+                { date: "Mar 30, 2026",       field: "Field D", water: 280, method: "Drip", status: "completed" },
+              ].map((h) => (
+                <div key={h.date} className="flex items-center justify-between py-2 border-b border-border/30 last:border-0">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                      h.status === "completed" ? "bg-emerald-50 border border-emerald-200" : "bg-amber-50 border border-amber-200"
+                    }`}>
+                      {h.status === "completed" ? (
+                        <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                      ) : (
+                        <CloudRain className="h-4 w-4 text-amber-500" />
+                      )}
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-foreground">{h.field}</p>
+                      <p className="text-[11px] text-muted-foreground">{h.date} · {h.method}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-bold text-foreground">{h.water > 0 ? `${h.water}L` : "Skipped"}</p>
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                      h.status === "completed" ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-amber-50 text-amber-700 border-amber-200"
+                    }`}>
+                      {h.status}
+                    </span>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm font-bold text-foreground mb-0.5">{rec.title}</p>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{rec.desc}</p>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ═════ 8. Live Weather (compact, last) ═════ */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Live Weather</h2>
+            <button
+              onClick={fetchWeather}
+              className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 ${weatherLoading ? "animate-spin" : ""}`} />
+              {lastUpdated ? `Updated ${lastUpdated}` : "Refresh"}
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {/* Current weather card */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-2xl border border-white/60 shadow-sm overflow-hidden"
+              style={{ background: "linear-gradient(135deg, hsl(142 40% 96%) 0%, hsl(196 50% 95%) 100%)" }}
+            >
+              <div className="p-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <div className="flex items-baseline gap-2 mb-1">
+                      <span className="text-4xl font-bold text-foreground">{now.temperature}°</span>
+                      <span className="text-lg text-muted-foreground">C</span>
+                    </div>
+                    <p className="text-sm font-semibold text-foreground">{wInfo.label}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">Pune, Maharashtra</p>
+                  </div>
+                  <div
+                    className="w-14 h-14 rounded-xl flex items-center justify-center shadow-sm"
+                    style={{ background: "linear-gradient(135deg, hsl(142 62% 36%), hsl(196 70% 44%))" }}
+                  >
+                    <WeatherIcon className="h-7 w-7 text-white" />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 mt-3">
+                  {[
+                    { icon: Droplets,    value: `${now.humidity}%`,       label: "Humidity" },
+                    { icon: Wind,        value: `${now.windSpeed} km/h`,   label: "Wind" },
+                    { icon: CloudRain,   value: `${now.precipitation} mm`, label: "Rain Today" },
+                  ].map((s) => (
+                    <div key={s.label} className="bg-white/70 rounded-xl px-2 py-2 text-center border border-white/60">
+                      <s.icon className="h-3.5 w-3.5 text-primary mx-auto mb-1" />
+                      <p className="text-xs font-bold text-foreground">{s.value}</p>
+                      <p className="text-[9px] text-muted-foreground">{s.label}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-3 flex items-center gap-2 px-3 py-2 rounded-lg bg-white/70 border border-white/60">
+                  <Zap className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+                  <p className="text-xs font-medium text-foreground">{wInfo.insight}</p>
                 </div>
               </div>
-            ))}
-          </motion.div>
-        </PremiumGate>
+            </motion.div>
+
+            {/* 4-day forecast */}
+            <div className="md:col-span-2 rounded-2xl border border-white/60 shadow-sm p-4"
+              style={{ background: "linear-gradient(135deg, hsl(45 40% 96%) 0%, hsl(35 50% 95%) 100%)" }}>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">4-Day Forecast</p>
+              <div className="grid grid-cols-4 gap-2">
+                {fc.map((day, i) => (
+                  <div key={i} className="bg-white/70 rounded-xl border border-white/60 p-3 text-center">
+                    <p className="text-[11px] font-semibold text-muted-foreground mb-1">{dayLabel(day.date, i)}</p>
+                    <CloudRain className={`h-4 w-4 mx-auto mb-1 ${day.rainChance > 50 ? "text-sky-500" : "text-muted-foreground/40"}`} />
+                    <p className="text-sm font-bold text-foreground">{day.maxTemp}°</p>
+                    <p className="text-[10px] text-muted-foreground">{day.minTemp}°</p>
+                    <p className={`text-[10px] font-medium mt-0.5 ${day.rainChance > 50 ? "text-sky-600" : "text-muted-foreground/60"}`}>
+                      {day.rainChance}%
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
 
       </div>
     </AppLayout>
