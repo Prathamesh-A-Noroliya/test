@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Leaf, Menu, X, Globe, ChevronDown } from "lucide-react";
+import NotificationBell from "./NotificationBell";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -69,6 +70,7 @@ export default function Header({ onMenuToggle, sidebarOpen }: HeaderProps) {
       </div>
 
       <div className="flex items-center gap-2">
+        <NotificationBell />
         {/* Language toggle */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

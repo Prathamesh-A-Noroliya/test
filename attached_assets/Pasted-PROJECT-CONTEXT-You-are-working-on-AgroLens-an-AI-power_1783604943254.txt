@@ -1,0 +1,691 @@
+PROJECT CONTEXT
+
+You are working on AgroLens, an AI-powered Smart Agriculture platform.
+
+The current project is already functional.
+
+DO NOT rebuild the application from scratch.
+
+Maintain the existing:
+
+authentication
+backend
+API structure
+routing
+database
+AI diagnosis
+Smart Irrigation logic
+color palette
+branding
+responsiveness
+
+Only improve the UI/UX, layout, navigation flow and component hierarchy.
+
+The objective is to make AgroLens feel like a premium agriculture SaaS product comparable to Tesla, Apple, Notion and Linear in terms of UI polish.
+
+Everything should feel modern, intelligent and focused on AI Smart Farming, not just crop disease scanning.
+
+GLOBAL DESIGN OBJECTIVE
+
+Currently the Dashboard feels like:
+
+Crop Scan App
+
+I want it to feel like:
+
+AI Agriculture Operating System
+
+The dashboard should equally represent
+
+Crop Disease Detection
+Smart Irrigation
+AI Analytics
+Farm Monitoring
+Weather Intelligence
+Soil Intelligence
+Notifications
+Field Health
+Government Schemes
+Market Intelligence
+
+Everything should look balanced.
+
+1. COMPLETE DASHBOARD REDESIGN
+
+The dashboard should become the central command center.
+
+Instead of feeling scan-focused, it should feel like an AI assistant monitoring the entire farm.
+
+Keep the Welcome Card but redesign everything below it.
+
+1A. Make Welcome Card Interactive
+
+Current card contains
+
+Today's Scans
+Active Issues
+Health %
+
+Instead of static badges:
+
+Each badge should become clickable.
+
+Clicking Today's Scans
+
+Navigate to
+
+History Page
+
+(not Scan Page)
+
+Clicking Active Issues
+
+Navigate to
+
+Issues Page
+
+Filtered only to unresolved issues.
+
+Clicking Health %
+
+Navigate to
+
+Field Health Overview.
+
+Open analytics section.
+
+Each badge should animate slightly on hover and tap.
+
+1B. Reposition Bhoomi Chatbot
+
+Currently Bhoomi chatbot overlaps navigation and is not easily visible.
+
+Redesign this.
+
+Requirements:
+
+• Floating circular assistant
+
+• Bottom right
+
+• Never overlap bottom navigation
+
+• Always stay visible
+
+• Add subtle floating animation
+
+• Shadow
+
+• Pulse effect when new AI suggestions are available
+
+When opened
+
+Bhoomi should slide from bottom
+
+instead of covering the screen abruptly.
+
+1C. Remove Subscription Box
+
+Completely remove
+
+Subscription Card
+
+No empty spaces should remain.
+
+Reflow dashboard naturally.
+
+1D. Replace "Scan Overall History"
+
+Replace entire card with
+
+View History
+
+This should become a beautiful summary card.
+
+Display
+
+Recent Diagnoses
+
+Recent Irrigation Events
+
+Recent Notifications
+
+Recent AI Recommendations
+
+Instead of only scans.
+
+Provide
+
+View Full History
+
+button.
+
+1E. Move Weather
+
+Current Weather widget feels like an isolated card.
+
+Remove it from current position.
+
+Move it to the very bottom of dashboard.
+
+Instead of widget,
+
+design it like an information strip.
+
+Example:
+
+Today's Weather
+
+☀ 29°C
+
+Humidity
+
+Wind
+
+Rain Probability
+
+Sunrise
+
+Sunset
+
+Compact horizontal design.
+
+Very elegant.
+
+Minimal.
+
+1F. Rearrange Dashboard Sections
+
+Current layout is unbalanced.
+
+New hierarchy should be
+
+Welcome Card
+
+↓
+
+Quick Actions
+
+↓
+
+Farm Health Overview
+
+↓
+
+Water Usage This Week
+
+↓
+
+Field Status
+
+↓
+
+AI Recommendations
+
+↓
+
+Recent Activity
+
+↓
+
+Today's Weather
+
+This creates better storytelling.
+
+2. HISTORY PAGE
+
+Rename
+
+Scan History
+
+to
+
+History
+
+This page should no longer represent only crop scans.
+
+Instead show timeline of
+
+Crop Diagnoses
+
+Irrigation Events
+
+AI Suggestions
+
+Notifications
+
+Weather Alerts
+
+Government Scheme Updates
+
+Market Price Alerts
+
+Everything in one timeline.
+
+Provide filter chips
+
+All
+
+Diagnoses
+
+Irrigation
+
+Alerts
+
+Government
+
+Market
+
+3. SMART IRRIGATION PAGE REDESIGN
+
+This page should become much more professional.
+
+Take inspiration from the attached reference image.
+
+I want beautiful analytics charts.
+
+Current cards should be replaced with
+
+professional graphs.
+
+For every irrigation zone
+
+Display
+
+Zone A
+
+Current Moisture %
+
+Trend
+
+Status
+
+Mini Analytics
+
+Line Graph
+
+Exactly like the reference.
+
+Graph requirements
+
+Dark chart
+
+Smooth curved lines
+
+Grid
+
+Gradient stroke
+
+Animated loading
+
+Time labels
+
+Morning
+
+Afternoon
+
+Evening
+
+Each graph should display
+
+Moisture trend over time.
+
+Below graphs
+
+Display
+
+Rainfall Prediction
+
+Water Consumption
+
+Pump Activity
+
+Next Irrigation Schedule
+
+Soil Moisture Trend
+
+Tank Level
+
+All using modern charts.
+
+No plain cards.
+
+4. NOTIFICATION CENTER
+
+Add new notification bell icon.
+
+Top navigation.
+
+When clicked
+
+Open modern notification panel.
+
+Notification categories
+
+AI
+
+Diagnosis Completed
+
+Disease Detected
+
+Smart Irrigation
+
+Irrigation Completed
+
+Pump Started
+
+Pump Stopped
+
+Government
+
+New Farmer Schemes
+
+PM-Kisan
+
+Subsidies
+
+Loans
+
+Insurance
+
+Market
+
+Crop Prices
+
+Demand
+
+Wholesale Rates
+
+Weather
+
+Heavy Rain
+
+Storm
+
+Heatwave
+
+Low Moisture
+
+System
+
+Updates
+
+Profile
+
+Security
+
+Each notification should have
+
+icon
+
+time
+
+priority color
+
+read/unread
+
+tap action
+
+mark as read
+
+clear all
+
+Realistic notification examples
+
+"AI diagnosis completed successfully."
+
+"Irrigation completed for Zone B."
+
+"Government launched new millet subsidy."
+
+"Tomato prices increased by 12%."
+
+"Heavy rainfall expected tomorrow."
+
+5. PROFILE PAGE COMPLETE REDESIGN
+
+Current profile page looks basic.
+
+Make it feel like a premium agriculture application.
+
+Profile should contain
+
+Large profile picture
+
+Farmer Name
+
+Verified Badge
+
+Village
+
+District
+
+State
+
+Farm Size
+
+Primary Crops
+
+Experience
+
+AI Farming Score
+
+Membership
+
+Farm Health Score
+
+Device Status
+
+Connected Sensors
+
+Irrigation Zones
+
+Water Saved
+
+AI Diagnoses Completed
+
+Achievements
+
+Example
+
+🌱 Smart Farmer
+
+💧 Water Saver
+
+🛰 AI Explorer
+
+📈 Precision Farming
+
+Below
+
+Settings
+
+Notifications
+
+Language
+
+Privacy
+
+Security
+
+Dark Mode
+
+Support
+
+About AgroLens
+
+Logout
+
+Add beautiful statistics.
+
+Everything should have smooth spacing.
+
+Modern cards.
+
+Rounded corners.
+
+Soft gradients.
+
+Micro animations.
+
+6. QUICK ACTIONS REDESIGN
+
+Current
+
+Scan Crop
+
+History
+
+Look disconnected.
+
+Replace with
+
+2x2 premium grid.
+
+Scan Crop
+
+Smart Irrigation
+
+History
+
+Analytics
+
+Each card should
+
+have illustration
+
+gradient
+
+hover animation
+
+shadow
+
+icon
+
+subtitle
+
+micro interaction
+
+7. DASHBOARD REPRESENTATION
+
+Dashboard must equally represent
+
+Crop Monitoring
+
+AI Diagnosis
+
+Irrigation
+
+Weather
+
+Analytics
+
+Market
+
+Government Schemes
+
+AI Insights
+
+Currently scan dominates.
+
+Balance everything.
+
+8. MICRO INTERACTIONS
+
+Throughout application
+
+Add
+
+hover animations
+
+card elevation
+
+button ripple
+
+smooth transitions
+
+chart animation
+
+counter animation
+
+page transitions
+
+notification slide
+
+loading skeletons
+
+Everything should feel alive.
+
+9. RESPONSIVENESS
+
+Maintain excellent responsiveness.
+
+Optimize
+
+Mobile
+
+Tablet
+
+Laptop
+
+Desktop
+
+Ultra-wide
+
+No mobile-sized containers on desktop.
+
+Dashboard should expand naturally using responsive grid layouts.
+
+Use breakpoints correctly.
+
+10. PERFORMANCE
+
+Do not reduce performance.
+
+Lazy load charts.
+
+Reuse components.
+
+Avoid unnecessary re-renders.
+
+Maintain fast page loading.
+
+11. DESIGN LANGUAGE
+
+Maintain AgroLens branding.
+
+Use
+
+Glassmorphism (light)
+
+Soft gradients
+
+Rounded corners
+
+Modern typography
+
+Generous spacing
+
+Minimal icons
+
+Smooth animations
+
+Professional charts
+
+Avoid clutter.
+
+12. FINAL QUALITY CHECK
+
+Before completing, ensure:
+
+No existing functionality is broken.
+All navigation routes continue to work.
+All buttons perform meaningful actions.
+Dashboard represents the complete AgroLens ecosystem, not only crop scanning.
+Smart Irrigation resembles a professional analytics dashboard with graphs similar to the provided reference.
+The notification system is fully integrated across diagnosis, irrigation, government schemes, weather, and market updates.
+The profile page feels like a production-ready farmer account rather than a placeholder.
+The entire application is responsive, polished, visually balanced, and suitable for deployment on Vercel.
+Overall Vision
+
+The final result should feel like a premium AI-powered agriculture platform where a farmer can manage their entire farm—from crop health and irrigation to weather, government schemes, market prices, analytics, and AI recommendations—in one unified, modern, intuitive interface. It should be polished enough to serve as a flagship product for hackathons, investor demos, and real-world deployment.
