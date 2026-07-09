@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   User, ShieldCheck, Leaf, Camera, MapPin, Phone,
-  Mail, CreditCard, Sparkles, CheckCircle2, Lock,
+  Mail, CreditCard, Sparkles, CheckCircle2, Lock, Droplets,
   Edit3, BadgeCheck, Tractor, BarChart3, Crown,
   Award, Settings, Bell, Globe, Moon, ThermometerSun,
   ChevronRight, LogOut, Star, TrendingUp,
