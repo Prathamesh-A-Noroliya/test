@@ -28,7 +28,7 @@ const dict: Record<LangCode, Record<string, string>> = {
     "nav.billing": "Payment & Billing",
     "sidebar.upgradeTo": "Upgrade to Pro",
     "sidebar.upgradeFeatures": "Unlimited scans · BHOOMI voice · Treatment protocols",
-    "sidebar.viewPlans": "View plans — from ₹79/mo →",
+    "sidebar.viewPlans": "View plans →",
     "sidebar.signOut": "Sign Out",
 
     /* Auth — Login */
@@ -216,7 +216,7 @@ const dict: Record<LangCode, Record<string, string>> = {
     "checkout.successMsg": "Your Pro subscription is now active.",
     "checkout.welcomePro": "Welcome to AgroLens Pro. Your account has been upgraded instantly.",
     "checkout.payNow": "Pay Now",
-    "checkout.paySecurely": "Pay ₹849 Securely",
+    "checkout.paySecurely": "Pay Securely",
     "checkout.processing": "Processing Payment…",
     "checkout.backToPlans": "Back to Plans",
     "checkout.secureCheckout": "Secure Checkout",
@@ -270,7 +270,7 @@ const dict: Record<LangCode, Record<string, string>> = {
     "nav.billing": "भुगतान और बिलिंग",
     "sidebar.upgradeTo": "प्रो में अपग्रेड करें",
     "sidebar.upgradeFeatures": "असीमित स्कैन · BHOOMI वॉइस · उपचार प्रोटोकॉल",
-    "sidebar.viewPlans": "योजनाएं देखें — ₹79/माह से →",
+    "sidebar.viewPlans": "योजनाएं देखें →",
     "sidebar.signOut": "साइन आउट",
 
     /* Auth — Login */
@@ -457,7 +457,7 @@ const dict: Record<LangCode, Record<string, string>> = {
     "checkout.successMsg": "आपकी प्रो सदस्यता अब सक्रिय है।",
     "checkout.welcomePro": "AgroLens Pro में आपका स्वागत है। आपका खाता तुरंत अपग्रेड हो गया है।",
     "checkout.payNow": "अभी भुगतान करें",
-    "checkout.paySecurely": "₹849 सुरक्षित रूप से भुगतान करें",
+    "checkout.paySecurely": "सुरक्षित रूप से भुगतान करें",
     "checkout.processing": "भुगतान प्रक्रिया में…",
     "checkout.backToPlans": "योजनाओं पर वापस जाएं",
     "checkout.secureCheckout": "सुरक्षित चेकआउट",
@@ -511,7 +511,7 @@ const dict: Record<LangCode, Record<string, string>> = {
     "nav.billing": "पेमेंट आणि बिलिंग",
     "sidebar.upgradeTo": "प्रोमध्ये अपग्रेड करा",
     "sidebar.upgradeFeatures": "अमर्यादित स्कॅन · BHOOMI व्हॉइस · उपचार प्रोटोकॉल",
-    "sidebar.viewPlans": "योजना पाहा — ₹79/महिना पासून →",
+    "sidebar.viewPlans": "योजना पाहा →",
     "sidebar.signOut": "साइन आउट करा",
 
     /* Auth — Login */
@@ -698,7 +698,7 @@ const dict: Record<LangCode, Record<string, string>> = {
     "checkout.successMsg": "तुमची प्रो सदस्यता आता सक्रिय आहे.",
     "checkout.welcomePro": "AgroLens Pro मध्ये आपले स्वागत आहे. तुमचे खाते त्वरित अपग्रेड झाले आहे.",
     "checkout.payNow": "आता पेमेंट करा",
-    "checkout.paySecurely": "₹849 सुरक्षितपणे पेमेंट करा",
+    "checkout.paySecurely": "सुरक्षितपणे पेमेंट करा",
     "checkout.processing": "पेमेंट प्रक्रिया सुरू आहे…",
     "checkout.backToPlans": "योजनांकडे परत जा",
     "checkout.secureCheckout": "सुरक्षित चेकआउट",

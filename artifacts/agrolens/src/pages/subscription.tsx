@@ -10,13 +10,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/language-context";
 
-/* ──── Plan Builder Data ──────────────────────────────────────────── */
+/* ─── Plan Builder Data ──────────────────────────────────────────── */
 const MODULES = [
   {
     id: "irrigation",
     icon: Droplets,
     name: "Automated Irrigation",
-    price: 20,
+    price: 9,
     desc: "Smart soil moisture monitoring, auto-irrigation scheduling, and water usage analytics.",
     color: "from-cyan-500 to-blue-500",
     bg: "bg-cyan-50",
@@ -27,7 +27,7 @@ const MODULES = [
     id: "scans",
     icon: Camera,
     name: "Unlimited Crop Scans",
-    price: 100,
+    price: 9,
     desc: "Unlimited AI disease detection scans with full treatment protocols and expert reports.",
     color: "from-violet-500 to-purple-500",
     bg: "bg-violet-50",
@@ -38,7 +38,7 @@ const MODULES = [
     id: "ai",
     icon: BrainCircuit,
     name: "AI Treatment Plans",
-    price: 200,
+    price: 99,
     desc: "Personalised 10-day treatment schedules, fertiliser plans, organic alternatives, and charts.",
     color: "from-amber-500 to-orange-500",
     bg: "bg-amber-50",
@@ -49,7 +49,7 @@ const MODULES = [
     id: "expert",
     icon: Users,
     name: "Expert Help",
-    price: 500,
+    price: 299,
     desc: "Live chat with certified agronomists + 3 on-field farm visits per year.",
     color: "from-emerald-500 to-teal-500",
     bg: "bg-emerald-50",
@@ -70,11 +70,7 @@ const FREE_FEATURES = [
   "Community Support",
 ];
 
-const YEARLY_BUNDLE = {
-  total: 6200,
-  monthly: 6200 / 12,
-  savings: (20 + 100 + 200 + 500) * 12 - 6200,
-};
+const YEARLY_DISCOUNT_RATE = 0.18;
 
 const container = {
   hidden: {},
@@ -85,7 +81,7 @@ const item = {
   show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" as const } },
 };
 
-/* ──── Page ─────────────────────────────────────────────────────────── */
+/* ─── Page ──────────────────────────────────────────── */
 export default function SubscriptionPage() {
   const [, navigate] = useLocation();
   const { t } = useLanguage();
@@ -101,13 +97,14 @@ export default function SubscriptionPage() {
 
   const selectedModules = MODULES.filter((m) => selected.has(m.id));
   const monthlyTotal = selectedModules.reduce((s, m) => s + m.price, 0);
-  const yearlyTotal = yearly ? monthlyTotal * 12 : 0;
-  const isAllSelected = MODULES.every((m) => selected.has(m.id));
-  const isMultiSelected = selectedModules.length >= 2 && !isAllSelected;
-  const multiDiscountRate = selectedModules.length === 2 ? 0.18 : selectedModules.length === 3 ? 0.19 : 0.20;
-  const multiDiscount = isMultiSelected ? Math.round(yearly ? yearlyTotal * multiDiscountRate : monthlyTotal * multiDiscountRate) : 0;
-  const finalMonthly = isMultiSelected ? monthlyTotal - multiDiscount : monthlyTotal;
-  const finalYearly = isMultiSelected ? yearlyTotal - multiDiscount : yearlyTotal;
+  const isAllSelected = selectedModules.length === MODULES.length;
+  const qualifiesForYearlyDiscount = yearly && isAllSelected;
+
+  const baseAmount = yearly ? monthlyTotal * 12 : monthlyTotal;
+  const discountAmount = qualifiesForYearlyDiscount
+    ? Math.round(baseAmount * YEARLY_DISCOUNT_RATE)
+    : 0;
+  const finalAmount = baseAmount - discountAmount;
 
   return (
     <AppLayout>
@@ -142,7 +139,7 @@ export default function SubscriptionPage() {
                 className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${yearly ? "bg-white shadow-sm text-foreground" : "text-muted-foreground"}`}
               >
                 Yearly
-                <span className="ml-1 text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full">Save more</span>
+                <span className="ml-1 text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full">Save 18%</span>
               </button>
             </div>
           </div>
@@ -207,9 +204,9 @@ export default function SubscriptionPage() {
           })}
         </motion.div>
 
-        {/* Yearly Pro Bundle (when all selected) */}
+        {/* Yearly Pro Bundle (when all selected + yearly) */}
         <AnimatePresence>
-          {isAllSelected && (
+          {qualifiesForYearlyDiscount && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
@@ -226,65 +223,33 @@ export default function SubscriptionPage() {
                   </div>
                   <div>
                     <p className="text-sm font-bold text-foreground">Yearly AgroLens Pro Bundle</p>
-                    <p className="text-[11px] text-emerald-700 font-semibold">Best value — includes everything</p>
+                    <p className="text-[11px] text-emerald-700 font-semibold">18% OFF applied — all 4 plans</p>
                   </div>
+                  <span className="ml-auto text-xs font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">
+                    SAVE ₹{discountAmount}
+                  </span>
                 </div>
                 <div className="grid grid-cols-3 gap-2 mb-3">
                   <div className="text-center bg-white/70 rounded-xl p-2 border border-emerald-100">
-                    <p className="text-lg font-bold text-foreground">₹{YEARLY_BUNDLE.total}</p>
-                    <p className="text-[10px] text-muted-foreground">per year</p>
-                  </div>
-                  <div className="text-center bg-white/70 rounded-xl p-2 border border-emerald-100">
-                    <p className="text-lg font-bold text-emerald-600">₹{Math.round(YEARLY_BUNDLE.monthly)}</p>
-                    <p className="text-[10px] text-muted-foreground">per month</p>
+                    <p className="text-sm text-muted-foreground line-through">₹{baseAmount}</p>
+                    <p className="text-[10px] text-muted-foreground">original / yr</p>
                   </div>
                   <div className="text-center bg-emerald-50 rounded-xl p-2 border border-emerald-200">
-                    <p className="text-lg font-bold text-emerald-600">₹{YEARLY_BUNDLE.savings}</p>
-                    <p className="text-[10px] text-emerald-700">saved / yr</p>
+                    <p className="text-lg font-bold text-emerald-600">₹{finalAmount}</p>
+                    <p className="text-[10px] text-emerald-700">per year</p>
+                  </div>
+                  <div className="text-center bg-white/70 rounded-xl p-2 border border-emerald-100">
+                    <p className="text-lg font-bold text-emerald-600">₹{Math.round(finalAmount / 12)}</p>
+                    <p className="text-[10px] text-muted-foreground">per month</p>
                   </div>
                 </div>
                 <Button
                   className="w-full h-12 rounded-xl font-bold text-white border-0 shadow-md"
                   style={{ background: "linear-gradient(135deg, hsl(142 62% 36%), hsl(196 70% 44%))" }}
-                  onClick={() => navigate("/checkout")}
+                  onClick={() => navigate("/checkout", { state: { modules: selectedModules, yearly: true, discount: discountAmount, total: finalAmount } })}
                 >
-                  <Star className="h-4 w-4" /> Get Pro Bundle — ₹{YEARLY_BUNDLE.total}/yr
+                  <Star className="h-4 w-4" /> Get Pro Bundle — ₹{finalAmount}/yr
                 </Button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Multi-module discount banner */}
-        <AnimatePresence>
-          {isMultiSelected && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="overflow-hidden"
-            >
-              <div className="rounded-2xl p-4 border-2 border-emerald-300 shadow-sm"
-                style={{ background: "linear-gradient(135deg, hsl(142 40% 96%) 0%, hsl(170 35% 95%) 100%)" }}>
-                <div className="flex items-center gap-2 mb-2">
-                  <Sparkles className="h-4 w-4 text-emerald-500" />
-                  <p className="text-sm font-bold text-foreground">Bundle Discount Applied</p>
-                  <span className="ml-auto text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full">
-                    Save {Math.round(multiDiscountRate * 100)}%
-                  </span>
-                </div>
-                <div className="flex items-center justify-between text-xs mb-1">
-                  <span className="text-muted-foreground">Original price</span>
-                  <span className="line-through text-muted-foreground">₹{yearly ? yearlyTotal : monthlyTotal}{yearly ? "/yr" : "/mo"}</span>
-                </div>
-                <div className="flex items-center justify-between text-xs mb-1">
-                  <span className="text-muted-foreground">Discount ({Math.round(multiDiscountRate * 100)}% off)</span>
-                  <span className="text-emerald-600 font-semibold">-₹{multiDiscount}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm font-bold">
-                  <span className="text-foreground">Final price</span>
-                  <span className="text-emerald-700">₹{yearly ? finalYearly : finalMonthly}{yearly ? "/yr" : "/mo"}</span>
-                </div>
               </div>
             </motion.div>
           )}
@@ -295,7 +260,16 @@ export default function SubscriptionPage() {
           <div className="rounded-2xl p-4 border border-border/60 bg-muted/20">
             <div className="flex items-center justify-between mb-2">
               <p className="text-sm font-semibold text-muted-foreground">Your Plan Total</p>
-              <p className="text-2xl font-bold text-foreground">₹{yearly ? finalYearly : finalMonthly}<span className="text-sm text-muted-foreground font-normal">{yearly ? "/yr" : "/mo"}</span></p>
+              <p className="text-2xl font-bold text-foreground">
+                {discountAmount > 0 ? (
+                  <span className="flex flex-col items-end">
+                    <span className="text-sm text-muted-foreground line-through font-normal">₹{baseAmount}{yearly ? "/yr" : "/mo"}</span>
+                    <span>₹{finalAmount}{yearly ? "/yr" : "/mo"}</span>
+                  </span>
+                ) : (
+                  <span>₹{finalAmount}{yearly ? "/yr" : "/mo"}</span>
+                )}
+              </p>
             </div>
             {selectedModules.length > 0 && (
               <div className="space-y-1 mb-3">
@@ -305,10 +279,10 @@ export default function SubscriptionPage() {
                     <span className="font-semibold text-foreground">₹{yearly ? m.price * 12 : m.price}{yearly ? "/yr" : "/mo"}</span>
                   </div>
                 ))}
-                {isMultiSelected && (
+                {discountAmount > 0 && (
                   <div className="flex items-center justify-between text-xs pt-1 border-t border-border/30">
-                    <span className="text-emerald-600 font-semibold">Bundle discount ({Math.round(multiDiscountRate * 100)}%)</span>
-                    <span className="text-emerald-600 font-semibold">-₹{multiDiscount}</span>
+                    <span className="text-emerald-600 font-semibold">Yearly bundle discount (18%)</span>
+                    <span className="text-emerald-600 font-semibold">-₹{discountAmount}</span>
                   </div>
                 )}
               </div>
@@ -316,10 +290,10 @@ export default function SubscriptionPage() {
             <Button
               className="w-full h-12 rounded-xl font-bold gap-2"
               disabled={selectedModules.length === 0}
-              onClick={() => navigate("/checkout")}
+              onClick={() => navigate("/checkout", { state: { modules: selectedModules, yearly, discount: discountAmount, total: finalAmount } })}
             >
               <ArrowRight className="h-4 w-4" />
-              {selectedModules.length === 0 ? "Select at least one module" : `Continue — ₹${yearly ? finalYearly : finalMonthly}${yearly ? "/yr" : "/mo"}`}
+              {selectedModules.length === 0 ? "Select at least one module" : `Continue — ₹${finalAmount}${yearly ? "/yr" : "/mo"}`}
             </Button>
           </div>
         </motion.div>

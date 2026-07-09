@@ -470,7 +470,7 @@ function ExpertHelpSection({ isPremium, onSubscribe }: { isPremium: boolean; onS
                         <Sparkles className="h-3.5 w-3.5" />
                         Subscribe to Unlock Expert Help
                       </motion.button>
-                      <p className="text-[10px] text-muted-foreground mt-2">Starting ₹79/month · Cancel anytime</p>
+                      <p className="text-[10px] text-muted-foreground mt-2">Plans from ₹9/month · Cancel anytime</p>
                     </div>
                   </div>
                 </div>
