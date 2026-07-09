@@ -1,0 +1,420 @@
+You are continuing development of the existing AgroLens project.
+
+This is NOT a redesign from scratch.
+
+Maintain the existing design system, color palette, typography, spacing, animations, routing structure, and backend integrations.
+
+The application must remain fully deployable on Vercel without breaking any existing functionality.
+
+PRIMARY OBJECTIVE
+
+Improve usability and make the interface feel significantly more polished and professional.
+
+Focus on fixing UX issues while simplifying unnecessary UI.
+
+Every change should look intentional and production-ready.
+
+CHANGE 1 — FIX GLOBAL SCROLL BEHAVIOUR (HIGH PRIORITY)
+Current Problem
+
+Whenever the user scrolls to the bottom of one page (for example Dashboard) and then navigates to another section (Smart Irrigation, Scan, Analytics, History, AI Bhoomi, etc.), the next page opens at the exact previous scroll position.
+
+This creates a poor user experience.
+
+Example:
+
+User scrolls to bottom of Dashboard
+
+↓
+
+Clicks Smart Irrigation
+
+↓
+
+Smart Irrigation opens at bottom
+
+↓
+
+User must manually scroll back up.
+
+This should NEVER happen.
+
+Required Behaviour
+
+Whenever navigation happens between any routes/pages:
+
+Dashboard
+Crop Scan
+Analytics
+Smart Irrigation
+Scan History
+AI Bhoomi
+Settings
+Profile
+Every future page
+
+the page MUST automatically start from:
+
+scrollY = 0
+
+The transition should feel natural.
+
+Implementation
+
+Implement a global ScrollToTop component.
+
+Whenever the pathname changes:
+
+window.scrollTo({
+    top:0,
+    left:0,
+    behavior:"instant"
+})
+
+(or equivalent implementation depending on framework.)
+
+Do NOT use smooth scrolling here.
+
+The new page should instantly begin from the top.
+
+The fix must work:
+
+✓ Desktop
+
+✓ Tablet
+
+✓ Mobile
+
+✓ Browser refresh
+
+✓ Client-side routing
+
+✓ Vercel deployment
+
+CHANGE 2 — REMOVE THE 4 DASHBOARD QUICK ACTION CARDS
+
+Current dashboard contains four large cards:
+
+• Scan
+
+• Analytics
+
+• Irrigation
+
+• History
+
+These cards occupy too much visual space and make the dashboard feel cluttered.
+
+Remove Completely
+
+Delete all four cards.
+
+No empty containers.
+
+No placeholders.
+
+No blank spacing.
+
+Remove their layout entirely.
+
+After Removal
+
+Rebalance the dashboard.
+
+The remaining components should naturally move upward.
+
+Maintain equal spacing.
+
+The dashboard should now feel:
+
+cleaner
+premium
+less crowded
+modern
+
+There should be no indication that something was removed.
+
+CHANGE 3 — SMART IRRIGATION IMPROVEMENTS
+
+The irrigation page currently shows 4 irrigation zones.
+
+This feels unrealistic and unnecessarily busy.
+
+Replace
+
+Instead of:
+
+Zone 1
+
+Zone 2
+
+Zone 3
+
+Zone 4
+
+Only display:
+
+Zone A
+Zone B
+
+These should appear larger with better spacing.
+
+Use responsive cards.
+
+Realistic Sensor Data
+
+Populate both zones using believable agricultural values.
+
+Example:
+
+Zone A
+
+Soil Moisture
+
+68%
+
+Temperature
+
+29°C
+
+Humidity
+
+63%
+
+Status
+
+Healthy
+
+Pump
+
+OFF
+
+Water Requirement
+
+Low
+
+Last Irrigation
+
+Today • 6:45 AM
+
+Zone B
+
+Soil Moisture
+
+42%
+
+Temperature
+
+31°C
+
+Humidity
+
+58%
+
+Status
+
+Needs Water
+
+Pump
+
+Recommended ON
+
+Water Requirement
+
+Medium
+
+Last Irrigation
+
+Yesterday • 5:30 PM
+
+The values should appear live.
+
+Include subtle animations if already present.
+
+Status Colors
+
+Healthy
+
+Green
+
+Needs Water
+
+Amber
+
+Critical
+
+Red
+
+Progress Indicators
+
+Use elegant animated progress bars or circular indicators.
+
+Avoid flat boring percentages.
+
+The cards should look premium.
+
+Layout
+
+Desktop
+
+2 cards side by side.
+
+Tablet
+
+2 cards stacked.
+
+Mobile
+
+Vertical cards with full width.
+
+Improve Visual Hierarchy
+
+Increase spacing.
+
+Increase readability.
+
+Better typography.
+
+Better icons.
+
+Better alignment.
+
+Everything should feel like a commercial precision agriculture platform.
+
+CHANGE 4 — AI BHOOMI CHAT BUTTON
+
+Current floating AI Bhoomi button uses a generic chatbot icon.
+
+This weakens branding.
+
+Replace
+
+Remove chatbot icon.
+
+Instead use:
+
+AgroLens Logo
+
+as the floating assistant icon.
+
+Requirements
+
+Logo should be perfectly centered.
+
+Circular container.
+
+Maintain floating animation.
+
+Keep shadow.
+
+Keep hover effects.
+
+Keep click animation.
+
+Keep notification pulse if already present.
+
+Only replace the icon.
+
+Do NOT change chatbot functionality.
+
+Everything else remains exactly same.
+
+POLISH REQUIREMENTS
+
+After implementing all changes:
+
+Review every modified page.
+
+Ensure:
+
+No overlapping UI
+
+No broken spacing
+
+No inconsistent margins
+
+No alignment issues
+
+No overflow
+
+No console warnings
+
+No TypeScript errors
+
+No unused imports
+
+No duplicate components
+
+No layout shift
+
+RESPONSIVENESS
+
+Verify on
+
+320 px
+
+375 px
+
+390 px
+
+430 px
+
+768 px
+
+1024 px
+
+1440 px
+
+1920 px
+
+The website should intelligently expand on large displays instead of looking like a stretched mobile layout.
+
+PERFORMANCE
+
+Maintain excellent performance.
+
+Avoid unnecessary re-renders.
+
+Lazy load where appropriate.
+
+Reuse existing components.
+
+Do not introduce heavy libraries.
+
+CODE QUALITY
+
+Follow production-quality standards:
+
+Modular components
+Clean architecture
+Reusable UI
+Proper TypeScript types
+Maintainable code
+No duplicated logic
+Meaningful variable names
+Consistent formatting
+DO NOT CHANGE
+
+Do NOT modify:
+
+Existing authentication
+Crop Scan functionality
+AI Bhoomi backend
+Analytics calculations
+Scan History logic
+Navigation structure
+Theme colors
+Existing animations (unless required for these changes)
+API integrations
+
+Only implement the requested UI/UX improvements.
+
+FINAL ACCEPTANCE CHECKLIST
+
+The task is complete only if all of the following are true:
+
+Every route automatically opens at the top regardless of previous scroll position.
+The four Dashboard quick-action cards (Scan, Analytics, Irrigation, History) are completely removed and the dashboard layout is naturally rebalanced.
+Smart Irrigation now displays only two irrigation zones (Zone A and Zone B) with realistic agricultural sensor values, improved visual hierarchy, responsive layouts, premium progress indicators, and clear status colors.
+The floating AI Bhoomi launcher uses the AgroLens logo instead of the generic chatbot icon while preserving all existing chatbot functionality and animations.
+All modified pages are fully responsive, visually polished, free of layout issues, and production-ready for deployment on Vercel without introducing regressions.

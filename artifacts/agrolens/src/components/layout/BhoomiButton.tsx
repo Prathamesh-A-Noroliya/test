@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
 import {
   Mic, X, Bot, Send, MicOff, Leaf,
-  Volume2, VolumeX, Navigation, CheckCircle2, Sparkles,
+  Volume2, VolumeX, Navigation, CheckCircle2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useBhoomi } from "@/lib/bhoomi-context";
@@ -333,7 +333,7 @@ export default function BhoomiButton() {
               <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-border/30">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, hsl(142 62% 36%), hsl(196 70% 44%))" }}>
-                    <Sparkles className="h-4 w-4 text-white" />
+                    <Leaf className="h-4 w-4 text-white" />
                   </div>
                   <div>
                     <p className="text-sm font-bold text-foreground">BHOOMI</p>
@@ -418,7 +418,7 @@ export default function BhoomiButton() {
               className="relative w-14 h-14 rounded-full flex items-center justify-center shadow-xl shadow-emerald-500/25"
               style={{ background: "linear-gradient(135deg, hsl(142 62% 36%), hsl(196 70% 44%))" }}
             >
-              <Sparkles className="h-6 w-6 text-white" />
+              <Leaf className="h-6 w-6 text-white" />
               {pulse && (
                 <span className="absolute inset-0 rounded-full animate-ping bg-emerald-400/40" />
               )}

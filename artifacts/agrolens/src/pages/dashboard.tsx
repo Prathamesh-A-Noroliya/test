@@ -135,32 +135,6 @@ export default function DashboardPage() {
           </div>
         </motion.div>
 
-        {/* ===== Quick Actions 2x2 Grid ===== */}
-        <motion.div variants={item}>
-          <div className="grid grid-cols-2 gap-3">
-            {[
-              { icon: Camera, title: "Scan Crop", subtitle: "AI diagnosis", color1: "hsl(142 62% 36%)", color2: "hsl(196 70% 44%)", path: "/scan" },
-              { icon: WaterIcon, title: "Irrigation", subtitle: "Smart watering", color1: "hsl(200 65% 42%)", color2: "hsl(180 55% 38%)", path: "/irrigation" },
-              { icon: History, title: "History", subtitle: "All farm activity", color1: "hsl(280 55% 52%)", color2: "hsl(260 50% 48%)", path: "/history" },
-              { icon: BarChart3, title: "Analytics", subtitle: "Farm insights", color1: "hsl(260 50% 48%)", color2: "hsl(320 50% 48%)", path: "/analytics" },
-            ].map((qa) => (
-              <motion.button
-                key={qa.title}
-                whileHover={{ scale: 1.03, y: -2 }}
-                whileTap={{ scale: 0.97 }}
-                onClick={() => navigate(qa.path)}
-                className="relative overflow-hidden rounded-2xl p-4 md:p-5 text-left shadow-sm group"
-                style={{ background: `linear-gradient(135deg, ${qa.color1}, ${qa.color2})` }}
-              >
-                <qa.icon className="h-6 w-6 text-white/90 mb-2 group-hover:scale-110 transition-transform" />
-                <p className="text-white font-bold text-sm md:text-base leading-tight">{qa.title}</p>
-                <p className="text-white/70 text-[11px] md:text-xs mt-0.5">{qa.subtitle}</p>
-                <qa.icon className="absolute top-3 right-3 h-10 w-10 text-white opacity-10 group-hover:opacity-20 transition-opacity" />
-              </motion.button>
-            ))}
-          </div>
-        </motion.div>
-
         {/* ===== Farm Health Overview ===== */}
         <motion.div variants={item}>
           <Card className="rounded-2xl border-border/40 shadow-sm overflow-hidden">

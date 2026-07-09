@@ -19,6 +19,7 @@ import ProfilePage from "@/pages/profile";
 import IrrigationPage from "@/pages/irrigation";
 import RecommendationsPage from "@/pages/recommendations";
 import AnalyticsPage from "@/pages/analytics";
+import ScrollToTop from "@/components/ScrollToTop";
 import { MessageSquare } from "lucide-react";
 
 const queryClient = new QueryClient();
@@ -95,6 +96,7 @@ function App() {
           <AuthProvider>
             <ScanProvider>
               <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+                <ScrollToTop />
                 <Router />
               </WouterRouter>
               <Toaster />
