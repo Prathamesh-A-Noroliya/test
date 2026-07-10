@@ -28,7 +28,7 @@ const BHOOMI_RESPONSES: Array<{ keywords: string[]; reply: string }> = [
   { keywords: ["weather","rain","monsoon","temperature"], reply: "Today's forecast: 28C, partly cloudy with 65% humidity. Light rainfall expected around 3 PM. Optimal spray window: 6-9 AM tomorrow." },
   { keywords: ["price","market","mandi","rate","sell"], reply: "Current mandi prices: Wheat Rs 2,150/q, Rice Rs 1,980/q, Cotton Rs 6,200/q, Tomato Rs 850/q. Prices are 8% higher than last month." },
   { keywords: ["organic","natural","bio","neem"], reply: "Going organic? Neem oil (5 ml/litre) controls aphids, whiteflies, and fungal diseases. Trichoderma viride (4 g/litre) is a powerful soil biocontrol agent." },
-  { keywords: ["subscription","premium","plan","upgrade","pro"], reply: "AgroLens Pro gives you unlimited AI scans, full treatment protocols, and market alerts - all for just Rs 79/month or Rs 849/year." },
+  { keywords: ["subscription","premium","plan","upgrade","pro"], reply: "AgroLens Pro gives you unlimited AI scans, full treatment protocols, and market alerts - all for just Rs 29/month or Rs 299/year. AI Treatment Plans are Rs 99 one-time, and Expert Help is Rs 299 one-time." },
   { keywords: ["help","what","how"], reply: "I can help you with: Crop disease diagnosis, Treatment plans, Weather advisories, Market prices, Organic alternatives." },
   { keywords: ["cotton","kapas"], reply: "Cotton Leaf Curl Virus is the biggest threat this season. Apply Imidacloprid 17.8% SL to control whitefly populations." },
   { keywords: ["soil","mitti"], reply: "Soil health is foundational! Conduct a soil test every 2 years. Target pH 6.0-7.5. Add organic matter (FYM 5 tons/acre) annually." },

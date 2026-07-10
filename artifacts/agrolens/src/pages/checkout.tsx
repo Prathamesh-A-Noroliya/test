@@ -13,8 +13,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLanguage } from "@/lib/language-context";
 import { cn } from "@/lib/utils";
+import { PLANS, getPrice, getPriceLabel } from "@/lib/pricing";
 
-/* ─── Payment method types ───────────────────────────── */
+/* ─── Payment method types ─────────────────────────────────────────────── */
 
 type Method = "upi" | "card" | "wallet";
 
@@ -25,7 +26,7 @@ const PAYMENT_METHODS: Array<{ id: Method; label: string; icon: React.ElementTyp
 ];
 
 const UPI_APPS = [
-  { name: "GPay",    emoji: "🅶" },
+  { name: "GPay",    emoji: "🄦" },
   { name: "PhonePe", emoji: "🟣" },
   { name: "Paytm",   emoji: "🔵" },
   { name: "BHIM",    emoji: "🇮🇳" },
@@ -38,19 +39,16 @@ const WALLETS = [
   { name: "FreeCharge",    emoji: "🟢" },
 ];
 
-/* ─── Updated pricing ────────────────────────────────── */
+/* ─── Order Summary from pricing config ─────────────────────────────── */
 
-const ORDER_SUMMARY = {
-  plan:    "AgroLens Pro — Yearly",
-  price:   "₹849",
-  per:     "₹70.75/month",
-  trial:   "7 days free",
-  saving:  "Saving ₹99 vs monthly",
-};
+/* Full yearly bundle = irrigation + scans + ai + expert */
+const BUNDLE_YEARLY = getPrice(PLANS.irrigation, "yearly") + getPrice(PLANS.scans, "yearly") + PLANS.ai.onetimePrice + PLANS.expert.onetimePrice;
+const BUNDLE_MONTHLY = getPrice(PLANS.irrigation, "monthly") + getPrice(PLANS.scans, "monthly");
+const MONTHLY_SAVINGS = (BUNDLE_MONTHLY * 12) - BUNDLE_YEARLY;
 
-/* ─── Success Modal ──────────────────────────────────── */
+/* ─── Success Modal ─────────────────────────────────────────────── */
 
-function SuccessModal({ onClose }: { onClose: () => void }) {
+function SuccessModal({ amount }: { amount: string; onClose: () => void }) {
   const [, navigate] = useLocation();
   const { t } = useLanguage();
 
@@ -60,7 +58,6 @@ function SuccessModal({ onClose }: { onClose: () => void }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
-      onClick={onClose}
     >
       <motion.div
         initial={{ scale: 0.85, opacity: 0, y: 20 }}
@@ -68,9 +65,7 @@ function SuccessModal({ onClose }: { onClose: () => void }) {
         exit={{ scale: 0.9, opacity: 0 }}
         transition={{ type: "spring", stiffness: 280, damping: 24 }}
         className="bg-card rounded-3xl shadow-2xl max-w-sm w-full p-8 text-center space-y-5"
-        onClick={(e) => e.stopPropagation()}
       >
-        {/* Animated checkmark */}
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
@@ -110,11 +105,11 @@ function SuccessModal({ onClose }: { onClose: () => void }) {
         >
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">{t("checkout.plan")}</span>
-            <span className="font-semibold text-foreground">AgroLens Pro Yearly</span>
+            <span className="font-semibold text-foreground">AgroLens Pro</span>
           </div>
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">{t("checkout.amountPaid")}</span>
-            <span className="font-bold text-foreground">₹849</span>
+            <span className="font-bold text-foreground">{amount}</span>
           </div>
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">{t("checkout.validUntil")}</span>
@@ -130,16 +125,13 @@ function SuccessModal({ onClose }: { onClose: () => void }) {
           <Button className="w-full rounded-xl h-11 font-semibold gap-2" onClick={() => navigate("/dashboard")}>
             <Sparkles className="h-4 w-4" /> {t("checkout.goToDashboard")}
           </Button>
-          <button className="w-full text-xs text-muted-foreground hover:text-foreground transition-colors" onClick={onClose}>
-            {t("common.close")}
-          </button>
         </motion.div>
       </motion.div>
     </motion.div>
   );
 }
 
-/* ─── Checkout Page ──────────────────────────────────── */
+/* ─── Checkout Page ─────────────────────────────────────────────── */
 
 export default function CheckoutPage() {
   const [, navigate] = useLocation();
@@ -165,6 +157,8 @@ export default function CheckoutPage() {
     (method === "upi" && upiId.includes("@")) ||
     (method === "card" && cardNum.replace(/\s/g, "").length === 16 && cardName && cardExpiry.length === 5 && cardCvv.length === 3) ||
     method === "wallet";
+
+  const displayAmount = `₹${BUNDLE_YEARLY}`;
 
   const handlePay = async () => {
     if (!canPay) return;
@@ -199,13 +193,13 @@ export default function CheckoutPage() {
                     <Leaf className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-foreground">{ORDER_SUMMARY.plan}</p>
-                    <p className="text-xs text-muted-foreground">{ORDER_SUMMARY.per} · {ORDER_SUMMARY.trial}</p>
+                    <p className="text-sm font-bold text-foreground">AgroLens Pro — Yearly</p>
+                    <p className="text-xs text-muted-foreground">₹{Math.round(BUNDLE_YEARLY / 12)}/month · 7 days free</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-lg font-bold text-foreground">{ORDER_SUMMARY.price}</p>
-                  <p className="text-[10px] text-emerald-600 font-semibold">{ORDER_SUMMARY.saving}</p>
+                  <p className="text-lg font-bold text-foreground">₹{BUNDLE_YEARLY}</p>
+                  <p className="text-[10px] text-emerald-600 font-semibold">Saving ₹{MONTHLY_SAVINGS} vs monthly</p>
                 </div>
               </div>
             </CardContent>
@@ -265,17 +259,10 @@ export default function CheckoutPage() {
                   <div className="space-y-1.5">
                     <Label className="text-sm font-medium">Or enter UPI ID</Label>
                     <div className="flex gap-2">
-                      <Input
-                        placeholder="yourname@upi"
-                        className="h-11 rounded-xl flex-1"
-                        value={upiId}
-                        onChange={(e) => setUpiId(e.target.value)}
-                      />
-                      <Button variant="outline" className="h-11 rounded-xl px-4 text-sm font-medium shrink-0">
-                        Verify
-                      </Button>
+                      <Input placeholder="yourname@upi" className="h-11 rounded-xl flex-1" value={upiId} onChange={(e) => setUpiId(e.target.value)} />
+                      <Button variant="outline" className="h-11 rounded-xl px-4 text-sm font-medium shrink-0">Verify</Button>
                     </div>
-                    <p className="text-[11px] text-muted-foreground">You'll receive a collect request on your UPI app.</p>
+                    <p className="text-[11px] text-muted-foreground">You&apos;ll receive a collect request on your UPI app.</p>
                   </div>
                 </CardContent>
               </Card>
@@ -291,46 +278,22 @@ export default function CheckoutPage() {
                     <Label className="text-sm font-medium">Card Number</Label>
                     <div className="relative">
                       <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                      <Input
-                        placeholder="0000 0000 0000 0000"
-                        className="h-11 rounded-xl pl-10 font-mono"
-                        value={cardNum}
-                        onChange={(e) => setCardNum(formatCard(e.target.value))}
-                        maxLength={19}
-                      />
+                      <Input placeholder="0000 0000 0000 0000" className="h-11 rounded-xl pl-10 font-mono" value={cardNum} onChange={(e) => setCardNum(formatCard(e.target.value))} maxLength={19} />
                     </div>
                   </div>
                   <div className="space-y-1.5">
                     <Label className="text-sm font-medium">Name on Card</Label>
-                    <Input
-                      placeholder="RAMESH PATIL"
-                      className="h-11 rounded-xl uppercase"
-                      value={cardName}
-                      onChange={(e) => setCardName(e.target.value.toUpperCase())}
-                    />
+                    <Input placeholder="RAMESH PATIL" className="h-11 rounded-xl uppercase" value={cardName} onChange={(e) => setCardName(e.target.value.toUpperCase())} />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
                       <Label className="text-sm font-medium">Expiry</Label>
-                      <Input
-                        placeholder="MM/YY"
-                        className="h-11 rounded-xl font-mono"
-                        value={cardExpiry}
-                        onChange={(e) => setCardExpiry(formatExpiry(e.target.value))}
-                        maxLength={5}
-                      />
+                      <Input placeholder="MM/YY" className="h-11 rounded-xl font-mono" value={cardExpiry} onChange={(e) => setCardExpiry(formatExpiry(e.target.value))} maxLength={5} />
                     </div>
                     <div className="space-y-1.5">
                       <Label className="text-sm font-medium">CVV</Label>
                       <div className="relative">
-                        <Input
-                          placeholder="•••"
-                          type="password"
-                          className="h-11 rounded-xl font-mono"
-                          value={cardCvv}
-                          onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, "").slice(0, 3))}
-                          maxLength={3}
-                        />
+                        <Input placeholder="•••" type="password" className="h-11 rounded-xl font-mono" value={cardCvv} onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, "").slice(0, 3))} maxLength={3} />
                         <Lock className="absolute right-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
                       </div>
                     </div>
@@ -373,25 +336,16 @@ export default function CheckoutPage() {
 
         {/* Pay Button */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="pb-6 space-y-3">
-          <Button
-            className="w-full h-13 rounded-xl font-bold text-base gap-2 shadow-md"
-            size="lg"
-            onClick={handlePay}
-            disabled={!canPay || paying}
-          >
+          <Button className="w-full h-13 rounded-xl font-bold text-base gap-2 shadow-md" size="lg" onClick={handlePay} disabled={!canPay || paying}>
             {paying ? (
               <>
-                <motion.div
-                  className="w-5 h-5 border-2 border-primary-foreground/40 border-t-primary-foreground rounded-full"
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
-                />
+                <motion.div className="w-5 h-5 border-2 border-primary-foreground/40 border-t-primary-foreground rounded-full" animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }} />
                 {t("checkout.processing")}
               </>
             ) : (
               <>
                 <Lock className="h-5 w-5" />
-                {t("checkout.paySecurely")}
+                Pay {displayAmount} Securely
                 <ChevronRight className="h-5 w-5" />
               </>
             )}
@@ -407,7 +361,7 @@ export default function CheckoutPage() {
 
       {/* Success Modal */}
       <AnimatePresence>
-        {success && <SuccessModal onClose={() => setSuccess(false)} />}
+        {success && <SuccessModal amount={displayAmount} onClose={() => setSuccess(false)} />}
       </AnimatePresence>
     </AppLayout>
   );
